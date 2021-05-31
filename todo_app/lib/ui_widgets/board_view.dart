@@ -3,37 +3,25 @@ import 'package:boardview/board_list.dart';
 import 'package:boardview/boardview_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:boardview/boardview.dart';
-
-import '../BoardItemObject.dart';
-import '../BoardListObject.dart';
+import 'package:todo_app/data/todo_data.dart';
+import 'package:todo_app/entities/board_entity.dart';
+import 'package:todo_app/entities/list_entity.dart';
+import 'package:todo_app/entities/todo_entity.dart';
+import 'package:todo_app/utils/category.dart';
 
 class BoardViewExample extends StatelessWidget {
-  // final List<BoardItemObject> itemsListOne = ;
-
-  List<BoardListObject> _listData = [
-    BoardListObject(title: "List title 1", items: [
-      BoardItemObject(title: 'Item 1'),
-      BoardItemObject(title: 'Item 2'),
-      BoardItemObject(title: 'Item 3'),
-    ]),
-    BoardListObject(title: "List title 2", items: [
-      BoardItemObject(title: 'Item 1'),
-      BoardItemObject(title: 'Item 2'),
-      BoardItemObject(title: 'Item 3'),
-    ]),
-    BoardListObject(title: "List title 3", items: [
-      BoardItemObject(title: 'Item 1'),
-      BoardItemObject(title: 'Item 2'),
-      BoardItemObject(title: 'Item 3'),
-    ])
-  ];
+  
+  final todoData = new TodoData();
 
   //Can be used to animate to different sections of the BoardView
-  BoardViewController boardViewController = new BoardViewController();
+  final BoardViewController boardViewController = new BoardViewController();
 
   @override
   Widget build(BuildContext context) {
+    List<BoardEntity> _boardsData = todoData.allBoads();
+    List<ListEntity> _listData = todoData.listsFromBoard(_boardsData[0].id);
     List<BoardList> _lists = [];
+
     for (int i = 0; i < _listData.length; i++) {
       _lists.add(_createBoardList(_listData[i]) as BoardList);
     }
@@ -45,37 +33,39 @@ class BoardViewExample extends StatelessWidget {
     );
   }
 
-  Widget buildBoardItem(BoardItemObject itemObject) {
+  Widget buildBoardItem(TodoEntity itemObject) {
     return BoardItem(
         onStartDragItem:
             (int? listIndex, int? itemIndex, BoardItemState? state) {},
+        
         onDropItem: (int? listIndex, int? itemIndex, int? oldListIndex,
             int? oldItemIndex, BoardItemState? state) {
           //Used to update our local item data
-          var item = _listData[oldListIndex!].items![oldItemIndex!];
-          _listData[oldListIndex].items!.removeAt(oldItemIndex);
-          _listData[listIndex!].items!.insert(itemIndex!, item);
+          // var item = _listData[oldListIndex!].items![oldItemIndex!];
+          
+          // _listData[oldListIndex].items!.removeAt(oldItemIndex);
+          // _listData[listIndex!].items!.insert(itemIndex!, item);
         },
+        
         onTapItem:
             (int? listIndex, int? itemIndex, BoardItemState? state) async {},
+        
         item: Container(
           margin: EdgeInsets.all(8.0),
           child: Card(
             child: InkWell(
               // splashColor: Colors.blue.withAlpha(30),
-              onTap: () {
-                print('Card tapped.');
-              },
+              onTap: () { },
               child: Column(
                 children: [
                   Container(
-                    color: Colors.red[100],
+                    color: Category.getColor(itemObject.category),
                     child: ListTile(
                       leading: Icon(
-                        Icons.work,
-                        color: Colors.black87,
+                        Category.getIcon(itemObject.category),
+                        color: Category.getColorContrast(itemObject.category),
                       ),
-                      title: Text(itemObject.title),
+                      title: Text(itemObject.task),
                       subtitle: Text('Prazo: amanhã'),
                     ),
                   ),
@@ -83,7 +73,7 @@ class BoardViewExample extends StatelessWidget {
                     padding: EdgeInsets.all(16.0),
                     child: SizedBox(
                       child: Text(
-                          'Texto do card falando sobre oq o todo do card é'),
+                          itemObject.note),
                     ),
                   ),
                   Row(
@@ -91,8 +81,8 @@ class BoardViewExample extends StatelessWidget {
                     children: <Widget>[
                       IconButton(
                         icon: Icon(
-                          Icons.favorite_border,
-                          color: Colors.black87,
+                          itemObject.isFavorite? Icons.favorite : Icons.favorite_border,
+                          color: itemObject.isFavorite?Category.getColor( itemObject.category ) : Colors.black87
                         ),
                         onPressed: () {/* ... */},
                       ),
@@ -106,10 +96,12 @@ class BoardViewExample extends StatelessWidget {
         ));
   }
 
-  Widget _createBoardList(BoardListObject list) {
+  Widget _createBoardList(ListEntity list) {
+    List<TodoEntity> tasks = todoData.tasksFromList(list.id);
     List<BoardItem> items = [];
-    for (int i = 0; i < list.items!.length; i++) {
-      items.insert(i, buildBoardItem(list.items![i]) as BoardItem);
+
+    for (int i = 0; i < tasks.length; i++) {
+      items.insert(i, buildBoardItem(tasks[i]) as BoardItem);
     }
 
     return BoardList(
@@ -117,9 +109,9 @@ class BoardViewExample extends StatelessWidget {
       onTapList: (int? listIndex) async {},
       onDropList: (int? listIndex, int? oldListIndex) {
         //Update our local list data
-        var list = _listData[oldListIndex!];
-        _listData.removeAt(oldListIndex);
-        _listData.insert(listIndex!, list);
+        // var list = _listData[oldListIndex!];
+        // _listData.removeAt(oldListIndex);
+        // _listData.insert(listIndex!, list);
       },
       headerBackgroundColor: Color.fromARGB(255, 235, 236, 240),
       backgroundColor: Color.fromARGB(255, 235, 236, 240),
@@ -131,7 +123,7 @@ class BoardViewExample extends StatelessWidget {
                   children: [
                     Center(
                       child: Text(
-                        list.title!,
+                        list.name,
                         style: TextStyle(fontSize: 20),
                       ),
                     ),

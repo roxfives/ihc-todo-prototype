@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:todo_app/ui/expandable_fab.dart';
+import 'package:todo_app/ui_widgets/action_button.dart';
+import 'package:todo_app/ui_widgets/board_view.dart';
+import 'package:todo_app/ui_widgets/expandable_fab.dart';
 
-import 'ui/action_button.dart';
-import 'ui/board_view.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 void main() {
-  runApp(MyApp());
+  runApp(TodoApp());
 }
 
 // Copyright 2019 The Flutter team. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class MyApp extends StatelessWidget {
+class TodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -27,13 +27,13 @@ class MyApp extends StatelessWidget {
       // ],
       supportedLocales: AppLocalizations.supportedLocales,
       title: "Test",
-      home: AppBarDemo(),
+      home: AppToolBar(),
     );
   }
 }
 
-class AppBarDemo extends StatelessWidget {
-  const AppBarDemo() : super();
+class AppToolBar extends StatelessWidget {
+  const AppToolBar() : super();
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class AppBarDemo extends StatelessWidget {
       appBar: AppBar(
         title: Text(
             // localization.demoAppBarTitle,
-            'Board 1'),
+            'Board Principal'),
         actions: [
           IconButton(
             tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
@@ -69,14 +69,6 @@ class AppBarDemo extends StatelessWidget {
           ),
         ],),
       
-      
-      // FloatingActionButton(
-      //   onPressed: () {
-      //     // Add your onPressed code here!
-      //   },
-      //   child: const Icon(Icons.add),
-      //   // backgroundColor: Colors.green,
-      // ),
       drawer: Drawer(
         child: ListView(
           // Important: Remove any padding from the ListView.
@@ -86,20 +78,20 @@ class AppBarDemo extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text('O que vamos fazer hoje, Fulano?',
+              child: Text('O que vamos fazer hoje, Patrícia?',
                   style: DefaultTextStyle.of(context).style.apply(
                       fontSizeFactor: 0.6,
                       color: Colors.white,
                       decoration: TextDecoration.none)),
             ),
             ListTile(
-              title: Text('Board 1'),
+              title: Text('Board Principal'),
               onTap: () {
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              title: Text('Board 2'),
+              title: Text('Board Secundária'),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -132,24 +124,6 @@ class AppBarDemo extends StatelessWidget {
                             decoration: TextDecoration.none)),
                   ],
                 )),
-            // ListTile(
-            //   title: Text('Board 1'),
-            //   onTap: () {
-            //     // Update the state of the app
-            //     // ...
-            //     // Then close the drawer
-            //     Navigator.pop(context);
-            //   },
-            // ),
-            // ListTile(
-            //   title: Text('Board 2'),
-            //   onTap: () {
-            //     // Update the state of the app
-            //     // ...
-            //     // Then close the drawer
-            //     Navigator.pop(context);
-            //   },
-            // ),
           ],
         ),
       ),

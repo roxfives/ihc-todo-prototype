@@ -13,15 +13,15 @@ class Category {
     'house-chore': Colors.white,
   };
 
-  Color getColor(String category) {
+  static Color getColor(String category) {
     return _colors[category] ?? Colors.transparent;
   }
 
-  Color getColorContrast(String category) {
+  static Color getColorContrast(String category) {
     return _colorsConstrast[category] ?? Colors.black87;
   }
 
-  IconData getIcon(String category) {
+  static IconData getIcon(String category) {
     return _icons[category] ?? Icons.workspaces_filled;
   }
 }

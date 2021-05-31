@@ -1,10 +1,9 @@
-import 'package:todo_app/entities/board_entity.dart';
 
 class ListEntity {
   final bool complete;
   final String id;
   final String name;
-  final BoardEntity board;
+  final String board;
   final DateTime createdAt;
 
   ListEntity(this.id, this.complete, this.createdAt, this.name, this.board);
@@ -43,7 +42,7 @@ class ListEntity {
       json['complete'] as bool,
       json['createdAt'] as DateTime,
       json['name'] as String,
-      json['board'] as BoardEntity
+      json['board'] as String
     );
   }
 }

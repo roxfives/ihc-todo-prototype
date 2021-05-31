@@ -1,5 +1,3 @@
-import 'package:todo_app/entities/list_entity.dart';
-
 class TodoEntity {
   final bool complete;
   final String id;
@@ -7,11 +5,11 @@ class TodoEntity {
   final String task;
   final String category;
   final bool isFavorite;
-  final ListEntity list;
+  final String list;
   final DateTime dueDate;
   final DateTime createdAt;
 
-  TodoEntity(this.task, this.id, this.note, this.complete, this.category, this.isFavorite, this.createdAt, this.dueDate, this.list);
+  TodoEntity(this.task, this.id, this.note, this.complete, this.category, this.isFavorite, this.createdAt, this.dueDate, this.list,);
 
   @override
   int get hashCode =>
@@ -58,7 +56,7 @@ class TodoEntity {
       json ['isFavorite'] as bool,
       json ['dueDate'] as DateTime,
       json ['createdAt'] as DateTime,
-      json ['list'] as ListEntity,
+      json ['list'] as String,
     );
   }
 }
