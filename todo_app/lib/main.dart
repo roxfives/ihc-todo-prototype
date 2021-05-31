@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'board_view.dart';
+
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 void main() {
   runApp(MyApp());
 }
@@ -29,61 +33,150 @@ class MyApp extends StatelessWidget {
 
 class AppBarDemo extends StatelessWidget {
   const AppBarDemo() : super();
+  
 
   @override
   Widget build(BuildContext context) {
     // var localization = GalleryLocalizations.of(context);
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        leading: IconButton(
-          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
         title: Text(
             // localization.demoAppBarTitle,
-            'App demo'),
+            'Board 1'),
         actions: [
+          // IconButton(
+          //   tooltip: 'Favorite', //localization.starterAppTooltipFavorite,
+          //   icon: const Icon(
+          //     Icons.favorite,
+          //   ),
+          //   onPressed: () {},
+          // ),
+          // IconButton(
+          //   tooltip: 'Search', //localization.starterAppTooltipSearch,
+          //   icon: const Icon(
+          //     Icons.search,
+          //   ),
+          //   onPressed: () {},
+          // ),
           IconButton(
-            tooltip: 'Favorite', //localization.starterAppTooltipFavorite,
+            tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
             icon: const Icon(
-              Icons.favorite,
+              Icons.notifications,
             ),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: 'Search', //localization.starterAppTooltipSearch,
-            icon: const Icon(
-              Icons.search,
-            ),
-            onPressed: () {},
-          ),
-          PopupMenuButton<Text>(
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(
-                  child:
-                      Text('navigation1' //localization.demoNavigationRailFirst,
-                          ),
-                ),
-                PopupMenuItem(
-                  child: Text(
-                      'navigation1' //localization.demoNavigationRailSecond,
-                      ),
-                ),
-                PopupMenuItem(
-                  child:
-                      Text('navigation3' //localization.demoNavigationRailThird,
-                          ),
-                ),
-              ];
+            onPressed: () {
+              _scaffoldKey.currentState!.openEndDrawer();
             },
-          )
+          ),
+          // PopupMenuButton<Text>(
+          //   itemBuilder: (context) {
+          //     return [
+          //       PopupMenuItem(
+          //         child:
+          //             Text('navigation1' //localization.demoNavigationRailFirst,
+          //                 ),
+          //       ),
+          //       PopupMenuItem(
+          //         child: Text(
+          //             'navigation1' //localization.demoNavigationRailSecond,
+          //             ),
+          //       ),
+          //       PopupMenuItem(
+          //         child:
+          //             Text('navigation3' //localization.demoNavigationRailThird,
+          //                 ),
+          //       ),
+          //     ];
+          //   },
+          // )
         ],
       ),
-      body: Center(
-        child: Text(AppLocalizations.of(context)!.hello_world  //'Home' //localization.cupertinoTabBarHomeTab,
+      body: Center(child: BoardViewExample()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        child: const Icon(Icons.add),
+        // backgroundColor: Colors.green,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('O que vamos fazer hoje, Fulano?',
+                  style: DefaultTextStyle.of(context).style.apply(
+                      fontSizeFactor: 0.6,
+                      color: Colors.white,
+                      decoration: TextDecoration.none)),
             ),
+            ListTile(
+              title: Text('Board 1'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Board 2'),
+              onTap: () {
+                // Update the state of the app
+                // ...
+                // Then close the drawer
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+
+      endDrawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(children: [
+              Icon(Icons.notifications_none, color: Colors.white,),
+              SizedBox(height: 20,),
+              Text('Sem notificações no momento',
+                  style: DefaultTextStyle.of(context).style.apply(
+                      fontSizeFactor: 0.3,
+                      color: Colors.white,
+                      decoration: TextDecoration.none)),
+            ],)
+            ),
+            // ListTile(
+            //   title: Text('Board 1'),
+            //   onTap: () {
+            //     // Update the state of the app
+            //     // ...
+            //     // Then close the drawer
+            //     Navigator.pop(context);
+            //   },
+            // ),
+            // ListTile(
+            //   title: Text('Board 2'),
+            //   onTap: () {
+            //     // Update the state of the app
+            //     // ...
+            //     // Then close the drawer
+            //     Navigator.pop(context);
+            //   },
+            // ),
+            
+            
+          ],
+        ),
       ),
     );
   }
