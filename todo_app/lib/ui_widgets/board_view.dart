@@ -4,8 +4,8 @@ import 'package:boardview/boardview_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:boardview/boardview.dart';
 
-import 'BoardItemObject.dart';
-import 'BoardListObject.dart';
+import '../BoardItemObject.dart';
+import '../BoardListObject.dart';
 
 class BoardViewExample extends StatelessWidget {
   // final List<BoardItemObject> itemsListOne = ;

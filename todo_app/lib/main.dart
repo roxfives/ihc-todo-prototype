@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:todo_app/expandable_fab.dart';
+import 'package:todo_app/ui/expandable_fab.dart';
 
-import 'action_button.dart';
-import 'board_view.dart';
+import 'ui/action_button.dart';
+import 'ui/board_view.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 void main() {
