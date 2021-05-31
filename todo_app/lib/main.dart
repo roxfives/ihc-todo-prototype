@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:todo_app/expandable_fab.dart';
 
+import 'action_button.dart';
 import 'board_view.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -55,13 +57,26 @@ class AppBarDemo extends StatelessWidget {
         ],
       ),
       body: Center(child: BoardViewExample()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your onPressed code here!
-        },
-        child: const Icon(Icons.add),
-        // backgroundColor: Colors.green,
-      ),
+      floatingActionButton: ExpandableFab(distance: 112.0,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            icon: const Icon(Icons.add_task),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.playlist_add),
+          ),
+        ],),
+      
+      
+      // FloatingActionButton(
+      //   onPressed: () {
+      //     // Add your onPressed code here!
+      //   },
+      //   child: const Icon(Icons.add),
+      //   // backgroundColor: Colors.green,
+      // ),
       drawer: Drawer(
         child: ListView(
           // Important: Remove any padding from the ListView.
@@ -138,6 +153,24 @@ class AppBarDemo extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  static const _actionTitles = ['Adicionar item', 'Adicionar lista'];
+  void _showAction(BuildContext context, int index) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(_actionTitles[index]),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('FECHAR'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
