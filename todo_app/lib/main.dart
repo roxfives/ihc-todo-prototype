@@ -3,8 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'board_view.dart';
 
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 void main() {
   runApp(MyApp());
 }
@@ -33,7 +32,6 @@ class MyApp extends StatelessWidget {
 
 class AppBarDemo extends StatelessWidget {
   const AppBarDemo() : super();
-  
 
   @override
   Widget build(BuildContext context) {
@@ -45,20 +43,6 @@ class AppBarDemo extends StatelessWidget {
             // localization.demoAppBarTitle,
             'Board 1'),
         actions: [
-          // IconButton(
-          //   tooltip: 'Favorite', //localization.starterAppTooltipFavorite,
-          //   icon: const Icon(
-          //     Icons.favorite,
-          //   ),
-          //   onPressed: () {},
-          // ),
-          // IconButton(
-          //   tooltip: 'Search', //localization.starterAppTooltipSearch,
-          //   icon: const Icon(
-          //     Icons.search,
-          //   ),
-          //   onPressed: () {},
-          // ),
           IconButton(
             tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
             icon: const Icon(
@@ -68,27 +52,6 @@ class AppBarDemo extends StatelessWidget {
               _scaffoldKey.currentState!.openEndDrawer();
             },
           ),
-          // PopupMenuButton<Text>(
-          //   itemBuilder: (context) {
-          //     return [
-          //       PopupMenuItem(
-          //         child:
-          //             Text('navigation1' //localization.demoNavigationRailFirst,
-          //                 ),
-          //       ),
-          //       PopupMenuItem(
-          //         child: Text(
-          //             'navigation1' //localization.demoNavigationRailSecond,
-          //             ),
-          //       ),
-          //       PopupMenuItem(
-          //         child:
-          //             Text('navigation3' //localization.demoNavigationRailThird,
-          //                 ),
-          //       ),
-          //     ];
-          //   },
-          // )
         ],
       ),
       body: Center(child: BoardViewExample()),
@@ -117,44 +80,43 @@ class AppBarDemo extends StatelessWidget {
             ListTile(
               title: Text('Board 1'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
                 Navigator.pop(context);
               },
             ),
             ListTile(
               title: Text('Board 2'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
                 Navigator.pop(context);
               },
             ),
           ],
         ),
       ),
-
       endDrawer: Drawer(
         child: ListView(
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Column(children: [
-              Icon(Icons.notifications_none, color: Colors.white,),
-              SizedBox(height: 20,),
-              Text('Sem notificações no momento',
-                  style: DefaultTextStyle.of(context).style.apply(
-                      fontSizeFactor: 0.3,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.notifications_none,
                       color: Colors.white,
-                      decoration: TextDecoration.none)),
-            ],)
-            ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text('Sem notificações no momento',
+                        style: DefaultTextStyle.of(context).style.apply(
+                            fontSizeFactor: 0.3,
+                            color: Colors.white,
+                            decoration: TextDecoration.none)),
+                  ],
+                )),
             // ListTile(
             //   title: Text('Board 1'),
             //   onTap: () {
@@ -173,8 +135,6 @@ class AppBarDemo extends StatelessWidget {
             //     Navigator.pop(context);
             //   },
             // ),
-            
-            
           ],
         ),
       ),

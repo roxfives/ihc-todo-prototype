@@ -58,46 +58,49 @@ class BoardViewExample extends StatelessWidget {
         },
         onTapItem:
             (int? listIndex, int? itemIndex, BoardItemState? state) async {},
-        item: Card(
-          child: InkWell(
-            // splashColor: Colors.blue.withAlpha(30),
-            onTap: () {
-              print('Card tapped.');
-            },
-            child: Column(
-              children: [
-                Container(
-                  color: Colors.red[100],
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.work,
-                      color: Colors.black87,
-                    ),
-                    title: Text(itemObject.title),
-                    subtitle: Text('Prazo: amanhã'),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: SizedBox(
-                    child:
-                        Text('Texto do card falando sobre oq o todo do card é'),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(
-                        Icons.favorite_border,
+        item: Container(
+          margin: EdgeInsets.all(8.0),
+          child: Card(
+            child: InkWell(
+              // splashColor: Colors.blue.withAlpha(30),
+              onTap: () {
+                print('Card tapped.');
+              },
+              child: Column(
+                children: [
+                  Container(
+                    color: Colors.red[100],
+                    child: ListTile(
+                      leading: Icon(
+                        Icons.work,
                         color: Colors.black87,
                       ),
-                      onPressed: () {/* ... */},
+                      title: Text(itemObject.title),
+                      subtitle: Text('Prazo: amanhã'),
                     ),
-                    SizedBox(width: 8),
-                  ],
-                ),
-              ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: SizedBox(
+                      child: Text(
+                          'Texto do card falando sobre oq o todo do card é'),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(
+                          Icons.favorite_border,
+                          color: Colors.black87,
+                        ),
+                        onPressed: () {/* ... */},
+                      ),
+                      SizedBox(width: 8),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ));
