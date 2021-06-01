@@ -3,6 +3,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/widgets/circle_painter.dart';
 
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
 class EditCard extends StatefulWidget {
   const EditCard({Key? key}) : super(key: key);
 
@@ -72,23 +74,84 @@ class _EditCardState extends State<EditCard> {
     }).toList();
 
     return Scaffold(
+      key: _scaffoldKey,
       drawer: Drawer(
         child: ListView(
+          // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
-          children: [
+          children: <Widget>[
             DrawerHeader(
-                decoration:
-                    BoxDecoration(color: Theme.of(context).primaryColor),
-                child: Text('Header')),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('O que vamos fazer hoje, Patrícia?',
+                  style: DefaultTextStyle.of(context).style.apply(
+                      fontSizeFactor: 0.6,
+                      color: Colors.white,
+                      decoration: TextDecoration.none)),
+            ),
             ListTile(
-              title: Text('Item 1'),
-            )
+              title: Text('Board Principal'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Board Secundária'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.notifications_none,
+                    color: Colors.white,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text('Sem notificações no momento',
+                      style: DefaultTextStyle.of(context).style.apply(
+                          fontSizeFactor: 0.3,
+                          color: Colors.white,
+                          decoration: TextDecoration.none)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.pop(context),
+        child: Icon(Icons.check),
       ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(AppLocalizations.of(context)!.editCard),
+        actions: [
+          IconButton(
+            tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
+            icon: const Icon(
+              Icons.notifications,
+            ),
+            onPressed: () {
+              _scaffoldKey.currentState!.openEndDrawer();
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Padding(

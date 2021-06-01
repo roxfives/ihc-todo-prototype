@@ -36,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 8),
                 TextFormField(
+                  obscureText: true,
                   decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: AppLocalizations.of(context)!.password),
@@ -50,8 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text('Logado')));
+                      Navigator.popAndPushNamed(context, '/home');
                       }
                     },
                     child: Text(AppLocalizations.of(context)!.login))
