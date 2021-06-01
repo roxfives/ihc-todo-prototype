@@ -1,0 +1,12 @@
+{
+  "hello_world": "Olá mundo",
+  "username": "Usuário",
+  "password": "Senha",
+  "emptyField": "Por favor entre texto",
+  "submit": "Enviar",
+  "login": "Entrar",
+  "editCard": "Editar Tarefa",
+  "cardName": "Nome",
+  "cardDescription": "Descrição",
+  "cardDueDate": "Prazo"
+}

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:todo_app/modules/edit_card/screens/edit_card_screen.dart';
+import 'package:todo_app/modules/login/screens/login_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
       // ],
       supportedLocales: AppLocalizations.supportedLocales,
       title: "Test",
-      home: AppBarDemo(),
+      home: EditCard(),
     );
   }
 }
