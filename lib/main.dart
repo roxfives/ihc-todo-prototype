@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:todo_app/modules/edit_card/screens/edit_card_screen.dart';
-import 'package:todo_app/modules/login/screens/login_screen.dart';
+import 'package:todo_app/ui_widgets/action_button.dart';
+import 'package:todo_app/ui_widgets/board_view.dart';
+import 'package:todo_app/ui_widgets/expandable_fab.dart';
 
+
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 void main() {
-  runApp(MyApp());
+  runApp(TodoApp());
 }
 
 // Copyright 2019 The Flutter team. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class MyApp extends StatelessWidget {
+class TodoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,69 +27,124 @@ class MyApp extends StatelessWidget {
       // ],
       supportedLocales: AppLocalizations.supportedLocales,
       title: "Test",
-      home: EditCard(),
+      home: AppToolBar(),
     );
   }
 }
 
-class AppBarDemo extends StatelessWidget {
-  const AppBarDemo() : super();
+class AppToolBar extends StatelessWidget {
+  const AppToolBar() : super();
 
   @override
   Widget build(BuildContext context) {
     // var localization = GalleryLocalizations.of(context);
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        leading: IconButton(
-          tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
         title: Text(
             // localization.demoAppBarTitle,
-            'App demo'),
+            'Board Principal'),
         actions: [
           IconButton(
-            tooltip: 'Favorite', //localization.starterAppTooltipFavorite,
+            tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
             icon: const Icon(
-              Icons.favorite,
+              Icons.notifications,
             ),
-            onPressed: () {},
-          ),
-          IconButton(
-            tooltip: 'Search', //localization.starterAppTooltipSearch,
-            icon: const Icon(
-              Icons.search,
-            ),
-            onPressed: () {},
-          ),
-          PopupMenuButton<Text>(
-            itemBuilder: (context) {
-              return [
-                PopupMenuItem(
-                  child:
-                      Text('navigation1' //localization.demoNavigationRailFirst,
-                          ),
-                ),
-                PopupMenuItem(
-                  child: Text(
-                      'navigation1' //localization.demoNavigationRailSecond,
-                      ),
-                ),
-                PopupMenuItem(
-                  child:
-                      Text('navigation3' //localization.demoNavigationRailThird,
-                          ),
-                ),
-              ];
+            onPressed: () {
+              _scaffoldKey.currentState!.openEndDrawer();
             },
-          )
+          ),
         ],
       ),
-      body: Center(
-        child: Text(AppLocalizations.of(context)!.hello_world  //'Home' //localization.cupertinoTabBarHomeTab,
+      body: Center(child: BoardViewExample()),
+      floatingActionButton: ExpandableFab(distance: 112.0,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            icon: const Icon(Icons.add_task),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.playlist_add),
+          ),
+        ],),
+      
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('O que vamos fazer hoje, Patrícia?',
+                  style: DefaultTextStyle.of(context).style.apply(
+                      fontSizeFactor: 0.6,
+                      color: Colors.white,
+                      decoration: TextDecoration.none)),
             ),
+            ListTile(
+              title: Text('Board Principal'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Board Secundária'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
       ),
+      endDrawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.notifications_none,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text('Sem notificações no momento',
+                        style: DefaultTextStyle.of(context).style.apply(
+                            fontSizeFactor: 0.3,
+                            color: Colors.white,
+                            decoration: TextDecoration.none)),
+                  ],
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static const _actionTitles = ['Adicionar item', 'Adicionar lista'];
+  void _showAction(BuildContext context, int index) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(_actionTitles[index]),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('FECHAR'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
