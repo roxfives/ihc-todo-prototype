@@ -13,6 +13,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -33,6 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null;
                   },
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => node.nextFocus(),
                 ),
                 SizedBox(height: 8),
                 TextFormField(
@@ -46,12 +50,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                     return null;
                   },
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => node.nextFocus(),
                 ),
                 SizedBox(height: 8),
                 ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                      Navigator.popAndPushNamed(context, '/home');
+                        Navigator.popAndPushNamed(context, '/home');
                       }
                     },
                     child: Text(AppLocalizations.of(context)!.login))
