@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _formEmailKey = GlobalKey<FormFieldState>();
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -22,6 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
+
+    final snackBarSuccess = SnackBar(content: Text(AppLocalizations.of(context)!.sign_in_reset_sucess));
+    final snackBarFailed = SnackBar(content: Text(AppLocalizations.of(context)!.sign_in_reset_failed));
 
     return Scaffold(
       body: Center(
@@ -42,6 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextFormField(
+                      key: _formEmailKey,
                       controller: _emailController,
                       decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -104,13 +109,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(height: 8),
+              TextButton(
+                  onPressed: () {
+                    if (_formEmailKey.currentState!.validate()) {
+                      // _updateSignInStatus(status: 'sending-password-reset');
+                      sendEmailPasswordReset(email: _emailController.text)
+                          .then((value) => {
+                                _updateSignInStatus(status: 'email-sent'),
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBarSuccess)
+                              })
+                          .catchError((onError) => {
+                                _updateSignInStatus(status: 'failed-to-send-email'),
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBarFailed)
+                              });
+                    }
+                  },
+                  child: Text(AppLocalizations.of(context)!.forgot_password)),
+              SizedBox(height: 8),
               Visibility(
                 child: Center(
                   child: CircularProgressIndicator(
                     semanticsLabel: AppLocalizations.of(context)!.sign_progress,
                   ),
                 ),
-                visible: _signInValdiationStatus == 'validating',
+                visible: _signInValdiationStatus == 'validating' ||
+                    _signInValdiationStatus == 'sending-password-reset',
               ),
             ],
           ),
@@ -142,5 +167,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     return userCredential;
+  }
+
+  Future<void> sendEmailPasswordReset({email: String}) async {
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+    return;
   }
 }
