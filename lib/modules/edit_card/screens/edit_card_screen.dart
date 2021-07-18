@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:todo_app/data/list_provider.dart';
+import 'package:todo_app/data/todo_provider.dart';
+import 'package:todo_app/entities/list_entity.dart';
 import 'package:todo_app/widgets/circle_painter.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -15,9 +18,14 @@ class EditCard extends StatefulWidget {
 class _EditCardState extends State<EditCard> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final listProvider = ListProvider();
+  final todosProvider = TodoProvider();
   List<MaterialColor> colorList = [Colors.red, Colors.blue, Colors.green];
 
-  MaterialColor? dropdownValue;
+  MaterialColor dropdownValue = Colors.red;
+  String listValue = '';
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
 
@@ -135,11 +143,31 @@ class _EditCardState extends State<EditCard> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pop(context),
+        onPressed: () {
+          if (_formKey.currentState != null &&
+              _formKey.currentState!.validate()) {
+            todosProvider
+                .addTodo(
+                    _nameController.text,
+                    _descriptionController.text,
+                    dropdownValue.value.toString(),
+                    DateTime(
+                        selectedDate.year,
+                        selectedDate.month,
+                        selectedDate.day,
+                        selectedTime.hour,
+                        selectedTime.minute),
+                    listValue)
+                .then((value) => Navigator.pop(context));
+          }
+        },
         child: Icon(Icons.check),
       ),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(AppLocalizations.of(context)!.editCard),
         actions: [
           IconButton(
@@ -161,7 +189,39 @@ class _EditCardState extends State<EditCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                FutureBuilder<List<ListEntity>>(
+                    future: listProvider.fetchLists(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return DropdownButtonFormField(
+                          value: listValue,
+                          validator: (value) {
+                            if (value == '') {
+                              return AppLocalizations.of(context)!.emptyField;
+                            }
+                            return null;
+                          },
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              listValue = newValue!;
+                            });
+                          },
+                          items: [
+                            ListEntity('', false, DateTime.now(),
+                                'Selecione uma lista', '0'),
+                            ...snapshot.data!
+                          ]
+                              .map((e) => DropdownMenuItem<String>(
+                                    value: e.id,
+                                    child: Text(e.name),
+                                  ))
+                              .toList(),
+                        );
+                      }
+                      return CircularProgressIndicator();
+                    }),
                 TextFormField(
+                  controller: _nameController,
                   decoration: InputDecoration(
                       border: UnderlineInputBorder(),
                       labelText: AppLocalizations.of(context)!.cardName),
@@ -174,6 +234,7 @@ class _EditCardState extends State<EditCard> {
                 ),
                 SizedBox(height: 8),
                 TextFormField(
+                  controller: _descriptionController,
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: AppLocalizations.of(context)!.cardDescription,
@@ -204,6 +265,7 @@ class _EditCardState extends State<EditCard> {
                       padding: EdgeInsets.only(top: 11),
                       width: 50,
                       child: DropdownButtonFormField(
+                        value: dropdownValue,
                         onChanged: (MaterialColor? newValue) {
                           setState(() {
                             dropdownValue = newValue!;

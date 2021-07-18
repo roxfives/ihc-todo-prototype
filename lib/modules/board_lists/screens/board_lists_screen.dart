@@ -13,6 +13,12 @@ class BoardLists extends StatefulWidget {
 }
 
 class _BoardListsState extends State<BoardLists> {
+  void _navigateAndRefresh(BuildContext context) async {
+    await Navigator.pushNamed(context, '/editCard');
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +44,7 @@ class _BoardListsState extends State<BoardLists> {
         distance: 112.0,
         children: [
           ActionButton(
-            onPressed: () => Navigator.pushNamed(context, '/editCard'),
+            onPressed: () => _navigateAndRefresh(context),
             icon: const Icon(Icons.add_task),
           ),
           ActionButton(

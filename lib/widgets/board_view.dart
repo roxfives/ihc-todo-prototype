@@ -3,57 +3,132 @@ import 'package:boardview/board_list.dart';
 import 'package:boardview/boardview_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:boardview/boardview.dart';
-import 'package:todo_app/data/todo_data.dart';
-import 'package:todo_app/entities/board_entity.dart';
+import 'package:todo_app/data/todo_provider.dart';
 import 'package:todo_app/entities/list_entity.dart';
 import 'package:todo_app/entities/todo_entity.dart';
 import 'package:todo_app/utils/category.dart';
+import 'package:todo_app/data/list_provider.dart';
 
-class BoardViewExample extends StatelessWidget {
-  final todoData = new TodoData();
+class BoardViewExample extends StatefulWidget {
+  const BoardViewExample({Key? key}) : super(key: key);
+
+  @override
+  State<BoardViewExample> createState() => _BoardViewExample();
+}
+
+class _BoardViewExample extends State<BoardViewExample> {
+  late TextEditingController _controller;
+  final listsProvider = ListProvider();
+  final todosProvider = TodoProvider();
 
   //Can be used to animate to different sections of the BoardView
   final BoardViewController boardViewController = new BoardViewController();
 
   @override
-  Widget build(BuildContext context) {
-    List<BoardEntity> _boardsData = todoData.allBoads();
-    List<ListEntity> _listData = todoData.listsFromBoard(_boardsData[0].id);
-    List<BoardList> _lists = [];
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
 
-    for (int i = 0; i < _listData.length; i++) {
-      _lists.add(
-          _createBoardList(_listData[i]) as BoardList);
-    }
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
-      child: BoardView(
-        width: 350,
-        lists: _lists,
-        boardViewController: boardViewController,
+      child: FutureBuilder<List<ListEntity>>(
+        future: listsProvider.fetchLists(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            final List<String> lists = [];
+
+            snapshot.data.forEach((e) {
+              lists.add(e.id);
+            });
+
+            return FutureBuilder<List<List<TodoEntity>>>(
+              future: todosProvider.fetchTodosMultiLists(lists),
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snap) {
+                final List<BoardList> _lists = [];
+
+                if (snap.hasData) {
+                  for (int i = 0; i < snapshot.data.length; i++) {
+                    _lists.add(_createBoardList(snapshot.data[i], snap.data[i])
+                        as BoardList);
+                  }
+
+                  return BoardView(
+                    width: 350,
+                    lists: [
+                      ..._lists,
+                      BoardList(
+                        draggable: false,
+                        backgroundColor: Colors.white60,
+                        items: [
+                          BoardItem(
+                            draggable: false,
+                            item: Container(
+                              margin: EdgeInsets.all(8.0),
+                              child: MaterialButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return SimpleDialog(
+                                        title: Text('Criar Lista'),
+                                        children: [
+                                          TextField(
+                                            controller: _controller,
+                                          ),
+                                          MaterialButton(
+                                            onPressed: () {
+                                              listsProvider
+                                                  .addList(
+                                                    _controller.value.text,
+                                                    '0',
+                                                  )
+                                                  .whenComplete(
+                                                      () => setState(() {}));
+
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text('Adicionar'),
+                                          )
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                child: Text('Adicionar Lista'),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                    boardViewController: boardViewController,
+                  );
+                }
+
+                return CircularProgressIndicator();
+              },
+            );
+          }
+          return CircularProgressIndicator();
+        },
       ),
     );
   }
 
   Widget buildBoardItem(TodoEntity itemObject) {
     return BoardItem(
-      onStartDragItem:
-          (int? listIndex, int? itemIndex, BoardItemState? state) {},
-      onDropItem: (int? listIndex, int? itemIndex, int? oldListIndex,
-          int? oldItemIndex, BoardItemState? state) {
-        //Used to update our local item data
-        // var item = _listData[oldListIndex!].items![oldItemIndex!];
-
-        // _listData[oldListIndex].items!.removeAt(oldItemIndex);
-        // _listData[listIndex!].items!.insert(itemIndex!, item);
-      },
-      onTapItem:
-          (int? listIndex, int? itemIndex, BoardItemState? state) async {},
       item: Container(
         margin: EdgeInsets.all(8.0),
         child: Card(
           child: InkWell(
-            // splashColor: Colors.blue.withAlpha(30),
-            onTap: () {},
             child: Column(
               children: [
                 Container(
@@ -99,23 +174,14 @@ class BoardViewExample extends StatelessWidget {
     );
   }
 
-  Widget _createBoardList(ListEntity list) {
-    List<TodoEntity> tasks = todoData.tasksFromList(list.id);
+  Widget _createBoardList(ListEntity list, List<TodoEntity> todos) {
     List<BoardItem> items = [];
 
-    for (int i = 0; i < tasks.length; i++) {
-      items.insert(i, buildBoardItem(tasks[i]) as BoardItem);
+    for (int i = 0; i < todos.length; i++) {
+      items.insert(i, buildBoardItem(todos[i]) as BoardItem);
     }
 
     return BoardList(
-      onStartDragList: (int? listIndex) {},
-      onTapList: (int? listIndex) async {},
-      onDropList: (int? listIndex, int? oldListIndex) {
-        //Update our local list data
-        // var list = _listData[oldListIndex!];
-        // _listData.removeAt(oldListIndex);
-        // _listData.insert(listIndex!, list);
-      },
       headerBackgroundColor: Colors.white60,
       backgroundColor: Colors.white60,
       header: [
@@ -141,7 +207,25 @@ class BoardViewExample extends StatelessWidget {
           ),
         ),
       ],
-      items: items,
+      items: [
+        ...items,
+         BoardItem(
+          draggable: false,
+          item: Container(
+            margin: EdgeInsets.all(8.0),
+            child: MaterialButton(
+              onPressed: () {},
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add),
+                  Text('Adicionar'),
+                ],
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 }
