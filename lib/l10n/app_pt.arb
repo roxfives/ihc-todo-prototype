@@ -16,6 +16,7 @@
   "sign_in_failed": "E-mail e/ou senha inválidos",
   "sign_in_reset_failed": "E-mail para alteração de senha não foi enviado",
   "sign_in_reset_sucess": "E-mail para alteração de senha foi enviado",
+  "side_bar_message": "O que vamos fazer hoje, $name ?",
   "sign_progress": "Fazendo autenticação",
   "emptyField": "Por favor entre texto",
   "submit": "Enviar",
