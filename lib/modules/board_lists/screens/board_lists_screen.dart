@@ -77,12 +77,6 @@ class _BoardListsState extends State<BoardLists> {
                 Navigator.pop(context);
               },
             ),
-            ListTile(
-              title: Text('Board Secundária'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
           ],
         ),
       ),
