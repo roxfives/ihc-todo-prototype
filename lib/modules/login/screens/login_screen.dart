@@ -93,8 +93,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 8),
                     OutlinedButton(
                         onPressed: () {
-                          _updateSignInStatus(status: 'validating');
                           if (_formKey.currentState!.validate()) {
+                          _updateSignInStatus(status: 'validating');
                             signIn(
                                     email: _emailController.text,
                                     password: _passwordController.text)
