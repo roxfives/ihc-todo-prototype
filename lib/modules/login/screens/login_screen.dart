@@ -24,8 +24,10 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
 
-    final snackBarSuccess = SnackBar(content: Text(AppLocalizations.of(context)!.sign_in_reset_sucess));
-    final snackBarFailed = SnackBar(content: Text(AppLocalizations.of(context)!.sign_in_reset_failed));
+    final snackBarSuccess = SnackBar(
+        content: Text(AppLocalizations.of(context)!.sign_in_reset_sucess));
+    final snackBarFailed = SnackBar(
+        content: Text(AppLocalizations.of(context)!.sign_in_reset_failed));
 
     return Scaffold(
       body: Center(
@@ -57,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         } else if (_signInValdiationStatus == 'invalid') {
                           return AppLocalizations.of(context)!.sign_in_failed;
                         }
+
                         return null;
                       },
                       textInputAction: TextInputAction.next,
@@ -83,6 +86,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 8),
                     ElevatedButton(
                         onPressed: () {
+                          Navigator.pushNamed(context, '/register');
+                        },
+                        child:
+                            Text(AppLocalizations.of(context)!.create_account)),
+                    SizedBox(height: 8),
+                    OutlinedButton(
+                        onPressed: () {
                           _updateSignInStatus(status: 'validating');
                           if (_formKey.currentState!.validate()) {
                             signIn(
@@ -100,8 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           Navigator.popAndPushNamed(
                                               context, '/home')
                                         }
-                                    })
-                                .whenComplete(() => {});
+                                    });
                           }
                         },
                         child: Text(AppLocalizations.of(context)!.login)),
@@ -120,7 +129,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     .showSnackBar(snackBarSuccess)
                               })
                           .catchError((onError) => {
-                                _updateSignInStatus(status: 'failed-to-send-email'),
+                                _updateSignInStatus(
+                                    status: 'failed-to-send-email'),
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(snackBarFailed)
                               });
@@ -150,8 +160,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<UserCredential?> signIn({email: String, password: String}) async {
     UserCredential? userCredential;
-
-    await Future.delayed(const Duration(seconds: 1), () => "1");
 
     try {
       userCredential = await FirebaseAuth.instance

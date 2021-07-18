@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo_app/modules/board_lists/screens/board_lists_screen.dart';
 import 'package:todo_app/modules/edit_card/screens/edit_card_screen.dart';
 import 'package:todo_app/modules/login/screens/login_screen.dart';
+import 'package:todo_app/modules/login/screens/register_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +52,7 @@ class _AppState extends State<TodoApp> {
           return MaterialApp(
             routes: {
               '/home': (context) => BoardLists(),
+              '/register': (context) => RegisterScreen(),
               '/editCard': (context) => EditCard(),
             },
             localizationsDelegates: AppLocalizations.localizationsDelegates,
