@@ -2,6 +2,8 @@
   "hello_world": "Olá mundo",
   "username": "Usuário",
   "password": "Senha",
+  "sign_in_failed": "E-mail e/ou senha inválidos",
+  "sign_progress": "Fazendo autenticação",
   "emptyField": "Por favor entre texto",
   "submit": "Enviar",
   "login": "Entrar",
