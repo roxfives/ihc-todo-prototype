@@ -80,7 +80,7 @@ class _ExpandableFabState extends State<ExpandableFab>
    final count = widget.children.length;
    final step = 90.0 / (count - 1);
 
-   for (var i = 0, angleInDegrees = 0.0; i < count; i++, angleInDegrees += step) {
+   for (var i = 0, angleInDegrees = 90.0; i < count; i++, angleInDegrees -= step) {
      children.add(
        _ExpandingActionButton(
          directionInDegrees: angleInDegrees,

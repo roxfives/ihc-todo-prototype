@@ -69,6 +69,8 @@ class _EditCardState extends State<EditCard> {
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
+
     List<DropdownMenuItem<MaterialColor>> items = colorList.map((item) {
       return DropdownMenuItem<MaterialColor>(
         value: item,
@@ -231,14 +233,18 @@ class _EditCardState extends State<EditCard> {
                     }
                     return null;
                   },
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => node.nextFocus(),
                 ),
-                SizedBox(height: 8),
+                // SizedBox(height: 8),
                 TextFormField(
                   controller: _descriptionController,
                   decoration: InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: AppLocalizations.of(context)!.cardDescription,
                   ),
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => node.nextFocus(),
                 ),
                 SizedBox(height: 8),
                 Row(
@@ -257,6 +263,8 @@ class _EditCardState extends State<EditCard> {
                             labelText:
                                 AppLocalizations.of(context)!.cardDueDate,
                           ),
+                          textInputAction: TextInputAction.next,
+                          onEditingComplete: () => node.nextFocus(),
                         ),
                       ),
                     ),
@@ -276,6 +284,10 @@ class _EditCardState extends State<EditCard> {
                     ),
                   ],
                 ),
+
+                SizedBox(height: 8),
+                ElevatedButton(
+                    onPressed: () => [], child: const Text('Concluir'))
               ],
             ),
           ),

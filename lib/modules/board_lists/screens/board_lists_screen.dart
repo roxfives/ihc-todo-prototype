@@ -1,4 +1,9 @@
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+
 import 'package:todo_app/widgets/action_button.dart';
 import 'package:todo_app/widgets/board_view.dart';
 import 'package:todo_app/widgets/expandable_fab.dart';
@@ -47,10 +52,6 @@ class _BoardListsState extends State<BoardLists> {
             onPressed: () => _navigateAndRefresh(context),
             icon: const Icon(Icons.add_task),
           ),
-          ActionButton(
-            onPressed: () => Navigator.pushNamed(context, '/editCard'),
-            icon: const Icon(Icons.playlist_add),
-          ),
         ],
       ),
       drawer: Drawer(
@@ -62,7 +63,11 @@ class _BoardListsState extends State<BoardLists> {
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text('O que vamos fazer hoje, Patrícia?',
+              child: Text(
+                  'O que vamos fazer hoje, ' +
+                      (FirebaseAuth.instance.currentUser?.displayName ??
+                          'Usuário') +
+                      '?',
                   style: DefaultTextStyle.of(context).style.apply(
                       fontSizeFactor: 0.6,
                       color: Colors.white,
@@ -70,12 +75,6 @@ class _BoardListsState extends State<BoardLists> {
             ),
             ListTile(
               title: Text('Board Principal'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Board Secundária'),
               onTap: () {
                 Navigator.pop(context);
               },
