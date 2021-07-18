@@ -46,10 +46,6 @@ class _BoardListsState extends State<BoardLists> {
             onPressed: () => Navigator.pushNamed(context, '/editCard'),
             icon: const Icon(Icons.add_task),
           ),
-          ActionButton(
-            onPressed: () => Navigator.pushNamed(context, '/editCard'),
-            icon: const Icon(Icons.playlist_add),
-          ),
         ],
       ),
       drawer: Drawer(
