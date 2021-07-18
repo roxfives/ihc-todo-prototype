@@ -7,7 +7,6 @@ import 'package:todo_app/modules/board_lists/screens/board_lists_screen.dart';
 import 'package:todo_app/modules/edit_card/screens/edit_card_screen.dart';
 import 'package:todo_app/modules/login/screens/login_screen.dart';
 
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(TodoApp());
@@ -43,7 +42,6 @@ class _AppState extends State<TodoApp> {
       builder: (context, snapshot) {
         // Check for errors
         if (snapshot.hasError) {
-          
           throw snapshot.error ?? new Error();
           // return SomethingWentWrong();
         }
@@ -51,15 +49,15 @@ class _AppState extends State<TodoApp> {
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
           return MaterialApp(
-      routes: {
-        '/home': (context) => BoardLists(),
-        '/editCard': (context) => EditCard(),
-      },
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      title: "Test",
-      home: AppToolBar(),
-    );
+            routes: {
+              '/home': (context) => BoardLists(),
+              '/editCard': (context) => EditCard(),
+            },
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            title: "Test",
+            home: AppToolBar(),
+          );
         }
 
         // Otherwise, show something whilst waiting for initialization to complete
