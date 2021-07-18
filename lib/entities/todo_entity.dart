@@ -35,8 +35,8 @@ class TodoEntity {
       'id': id,
       'category': category,
       'isFavorite': isFavorite,
-      'dueDate': dueDate,
-      'createdAt': createdAt,
+      'dueDate': dueDate.toIso8601String(),
+      'createdAt': createdAt.toIso8601String(),
       'list': list,
     };
   }
@@ -54,8 +54,8 @@ class TodoEntity {
       json['complete'] as bool,
       json ['category'] as String,
       json ['isFavorite'] as bool,
-      json ['dueDate'] as DateTime,
-      json ['createdAt'] as DateTime,
+      DateTime.parse(json ['dueDate'] as String),
+      DateTime.parse(json ['createdAt'] as String),
       json ['list'] as String,
     );
   }

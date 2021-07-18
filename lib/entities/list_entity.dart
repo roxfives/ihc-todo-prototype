@@ -26,7 +26,7 @@ class ListEntity {
       'complete': complete,
       'id': id,
       'name': name,
-      'createdAt': createdAt,
+      'createdAt': createdAt.toIso8601String(),
       'board': board,
     };
   }
@@ -40,7 +40,7 @@ class ListEntity {
     return ListEntity(
       json['id'] as String,
       json['complete'] as bool,
-      json['createdAt'] as DateTime,
+      DateTime.parse(json['createdAt'] as String),
       json['name'] as String,
       json['board'] as String
     );
