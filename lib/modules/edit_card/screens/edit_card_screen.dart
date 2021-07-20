@@ -9,25 +9,33 @@ import 'package:todo_app/widgets/circle_painter.dart';
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class EditCard extends StatefulWidget {
-  const EditCard({Key? key}) : super(key: key);
+  const EditCard({Key? key, this.listId}) : super(key: key);
+
+  final String? listId;
 
   @override
-  State<EditCard> createState() => _EditCardState();
+  State<EditCard> createState() => _EditCardState(listId: this.listId);
 }
 
 class _EditCardState extends State<EditCard> {
+  String? listId;
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final listProvider = ListProvider();
   final todosProvider = TodoProvider();
-  List<MaterialColor> colorList = [Colors.red, Colors.blue, Colors.green];
+  final List<MaterialColor> colorList = [Colors.red, Colors.blue, Colors.green];
 
   MaterialColor dropdownValue = Colors.red;
   String listValue = '';
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+
+  _EditCardState({this.listId}) {
+    listValue = this.listId ?? '';
+  }
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -144,27 +152,27 @@ class _EditCardState extends State<EditCard> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_formKey.currentState != null &&
-              _formKey.currentState!.validate()) {
-            todosProvider
-                .addTodo(
-                    _nameController.text,
-                    _descriptionController.text,
-                    dropdownValue.value.toString(),
-                    DateTime(
-                        selectedDate.year,
-                        selectedDate.month,
-                        selectedDate.day,
-                        selectedTime.hour,
-                        selectedTime.minute),
-                    listValue)
-                .then((value) => Navigator.pop(context));
-          }
-        },
-        child: Icon(Icons.check),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     if (_formKey.currentState != null &&
+      //         _formKey.currentState!.validate()) {
+      //       todosProvider
+      //           .addTodo(
+      //               _nameController.text,
+      //               _descriptionController.text,
+      //               dropdownValue.value.toString(),
+      //               DateTime(
+      //                   selectedDate.year,
+      //                   selectedDate.month,
+      //                   selectedDate.day,
+      //                   selectedTime.hour,
+      //                   selectedTime.minute),
+      //               listValue)
+      //           .then((value) => Navigator.pop(context));
+      //     }
+      //   },
+      //   child: Icon(Icons.check),
+      // ),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -287,7 +295,26 @@ class _EditCardState extends State<EditCard> {
 
                 SizedBox(height: 8),
                 ElevatedButton(
-                    onPressed: () => [], child: const Text('Concluir'))
+                    onPressed: () => {
+                          if (_formKey.currentState != null &&
+                              _formKey.currentState!.validate())
+                            {
+                              todosProvider
+                                  .addTodo(
+                                      _nameController.text,
+                                      _descriptionController.text,
+                                      dropdownValue.value.toString(),
+                                      DateTime(
+                                          selectedDate.year,
+                                          selectedDate.month,
+                                          selectedDate.day,
+                                          selectedTime.hour,
+                                          selectedTime.minute),
+                                      listValue)
+                                  .then((value) => Navigator.pop(context))
+                            }
+                        },
+                    child: const Text('Concluir'))
               ],
             ),
           ),

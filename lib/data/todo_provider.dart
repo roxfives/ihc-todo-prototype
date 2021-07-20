@@ -24,6 +24,22 @@ class TodoProvider {
     return File('${directory.path}/todos.json');
   }
 
+  Future<List<TodoEntity>> fetchAllTodos() async {
+    try {
+      final file = await _localFile;
+
+      final contents = await file.readAsString();
+      final todos = List.from(jsonDecode(contents)['items']);
+
+      return todos
+          .map((e) => TodoEntity.fromJson(Map<String, Object>.from(e)))
+          .toList();
+    } catch (e) {
+      log(e.toString());
+      return [];
+    }
+  }
+
   Future<List<TodoEntity>> fetchTodosList(String list) async {
     try {
       final file = await _localFile;
@@ -65,7 +81,7 @@ class TodoProvider {
       DateTime dueDate, String list) async {
     final file = await _localFile;
 
-    final todos = await fetchTodosList(list);
+    final todos = await fetchAllTodos();
     final json = TodoArray([
       ...todos,
       TodoEntity(task, Uuid().v4(), note, false, category, false,

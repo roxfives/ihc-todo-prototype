@@ -214,7 +214,9 @@ class _BoardViewExample extends State<BoardViewExample> {
           item: Container(
             margin: EdgeInsets.all(8.0),
             child: MaterialButton(
-              onPressed: () {},
+              onPressed: () {
+                _navigateToList(context, list.id);
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -227,5 +229,10 @@ class _BoardViewExample extends State<BoardViewExample> {
         )
       ],
     );
+  }
+
+  void _navigateToList(BuildContext context, String id) async {
+    await Navigator.pushNamed(context, '/editCard/' + id);
+    setState(() {});
   }
 }

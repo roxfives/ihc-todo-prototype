@@ -55,6 +55,20 @@ class _AppState extends State<TodoApp> {
               '/register': (context) => RegisterScreen(),
               '/editCard': (context) => EditCard(),
             },
+            onGenerateRoute: (RouteSettings settings) {
+        final List<String>? pathElements = settings.name?.split('/');
+
+        if (pathElements == null || pathElements[0] != '') {
+          return null;
+        }
+
+        if (pathElements[1] == 'editCard') {
+          return MaterialPageRoute<bool>(
+            builder: (BuildContext context) => EditCard(listId: pathElements[2]),
+          );
+        }
+        return null;
+      },
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             title: "Test",

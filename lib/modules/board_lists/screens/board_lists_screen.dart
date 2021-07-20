@@ -2,11 +2,9 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
+import 'package:todo_app/data/list_provider.dart';
 
-import 'package:todo_app/widgets/action_button.dart';
 import 'package:todo_app/widgets/board_view.dart';
-import 'package:todo_app/widgets/expandable_fab.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -18,10 +16,20 @@ class BoardLists extends StatefulWidget {
 }
 
 class _BoardListsState extends State<BoardLists> {
-  void _navigateAndRefresh(BuildContext context) async {
-    await Navigator.pushNamed(context, '/editCard');
+  final _listProvider = new ListProvider();
 
-    setState(() {});
+  void _navigateAndRefresh(BuildContext context) async {
+    final lists = await _listProvider.fetchLists();
+
+    if (lists.length > 0) {
+      await Navigator.pushNamed(context, '/editCard');
+      setState(() {});
+    } else {
+      final _noListsSnack = SnackBar(
+          content: Text(AppLocalizations.of(context)!.create_list_first));
+
+      ScaffoldMessenger.of(context).showSnackBar(_noListsSnack);
+    }
   }
 
   @override
@@ -45,14 +53,9 @@ class _BoardListsState extends State<BoardLists> {
         ],
       ),
       body: Center(child: BoardViewExample()),
-      floatingActionButton: ExpandableFab(
-        distance: 112.0,
-        children: [
-          ActionButton(
-            onPressed: () => _navigateAndRefresh(context),
-            icon: const Icon(Icons.add_task),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _navigateAndRefresh(context),
+        child: const Icon(Icons.add),
       ),
       drawer: Drawer(
         child: ListView(
@@ -74,7 +77,8 @@ class _BoardListsState extends State<BoardLists> {
                       decoration: TextDecoration.none)),
             ),
             ListTile(
-              title: Text('Board Principal'),
+              leading: const Icon(Icons.flight_land),
+              title: Text('Sign out'),
               onTap: () {
                 Navigator.pop(context);
               },

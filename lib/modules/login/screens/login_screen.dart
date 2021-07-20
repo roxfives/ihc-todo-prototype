@@ -84,14 +84,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       onEditingComplete: () => node.nextFocus(),
                     ),
                     SizedBox(height: 8),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/register');
-                        },
-                        child:
-                            Text(AppLocalizations.of(context)!.create_account)),
                     SizedBox(height: 8),
-                    OutlinedButton(
+                    ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                           _updateSignInStatus(status: 'validating');
@@ -114,6 +108,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           }
                         },
                         child: Text(AppLocalizations.of(context)!.login)),
+                    OutlinedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/register');
+                        },
+                        child:
+                            Text(AppLocalizations.of(context)!.create_account)),
+                    
                   ],
                 ),
               ),
