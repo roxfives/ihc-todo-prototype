@@ -86,6 +86,13 @@ class _BoardListsState extends State<BoardLists> {
                     });
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: Text(AppLocalizations.of(context)!.about),
+              onTap: () {
+                Navigator.pushNamed(context, '/about');
+              },
+            ),
           ],
         ),
       ),
