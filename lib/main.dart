@@ -64,6 +64,7 @@ class _AppState extends State<TodoApp> {
             routes: {
               '/home': (context) => BoardLists(),
               '/register': (context) => RegisterScreen(),
+              '/signin': (context) => LoginScreen(),
               '/editCard': (context) => EditCard(),
             },
             onGenerateRoute: (RouteSettings settings) {

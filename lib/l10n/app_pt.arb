@@ -19,6 +19,7 @@
   "side_bar_message": "O que vamos fazer hoje, $name ?",
   "create_list_first": "É necessário criar pelo menos uma lista primeiro",
   "sign_progress": "Fazendo autenticação",
+  "sign_out": "Sair",
   "emptyField": "Por favor entre texto",
   "submit": "Enviar",
   "login": "Entrar",
