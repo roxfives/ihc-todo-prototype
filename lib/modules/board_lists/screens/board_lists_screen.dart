@@ -77,7 +77,7 @@ class _BoardListsState extends State<BoardLists> {
                       decoration: TextDecoration.none)),
             ),
             ListTile(
-              leading: const Icon(Icons.flight_land),
+              leading: const Icon(Icons.exit_to_app),
               title: Text(AppLocalizations.of(context)!.sign_out),
               onTap: () {
                 this.signOut().then((value) => {
