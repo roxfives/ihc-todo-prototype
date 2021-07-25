@@ -47,7 +47,7 @@ class _AboutScreenState extends State<AboutScreen> {
               leading: const Icon(Icons.article),
               title: Text(AppLocalizations.of(context)!.legal),
               onTap: () {
-                
+                Navigator.pushNamed(context, '/legal');
               },
             ),
             ],

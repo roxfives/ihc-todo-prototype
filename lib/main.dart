@@ -8,6 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:todo_app/modules/board_lists/screens/board_lists_screen.dart';
 import 'package:todo_app/modules/edit_card/screens/edit_card_screen.dart';
 import 'package:todo_app/modules/legal/screens/about_screen.dart';
+import 'package:todo_app/modules/legal/screens/legal_screen.dart';
 import 'package:todo_app/modules/login/screens/login_screen.dart';
 import 'package:todo_app/modules/login/screens/register_screen.dart';
 
@@ -68,6 +69,7 @@ class _AppState extends State<TodoApp> {
               '/signin': (context) => LoginScreen(),
               '/editCard': (context) => EditCard(),
               '/about': (context) => AboutScreen(),
+              '/legal': (context) => LegalScreen(),
             },
             onGenerateRoute: (RouteSettings settings) {
               final List<String>? pathElements = settings.name?.split('/');
