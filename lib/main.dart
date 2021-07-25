@@ -1,3 +1,5 @@
+import 'package:boardview/boardview.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,13 +22,20 @@ void main() {
 class TodoApp extends StatefulWidget {
   _AppState createState() => _AppState();
 }
-
-class AppToolBar extends StatelessWidget {
-  const AppToolBar() : super();
+class UnauthenticatedAppToolBar extends StatelessWidget {
+  const UnauthenticatedAppToolBar() : super();
 
   @override
   Widget build(BuildContext context) {
-    return LoginScreen();
+    return  LoginScreen();
+  }
+}
+class AuthenticatedAppToolBar extends StatelessWidget {
+  const AuthenticatedAppToolBar() : super();
+
+  @override
+  Widget build(BuildContext context) {
+    return  BoardLists();
   }
 }
 
@@ -49,6 +58,8 @@ class _AppState extends State<TodoApp> {
 
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
+          var isAuthenticated = FirebaseAuth.instance.currentUser != null;
+
           return MaterialApp(
             routes: {
               '/home': (context) => BoardLists(),
@@ -56,23 +67,24 @@ class _AppState extends State<TodoApp> {
               '/editCard': (context) => EditCard(),
             },
             onGenerateRoute: (RouteSettings settings) {
-        final List<String>? pathElements = settings.name?.split('/');
+              final List<String>? pathElements = settings.name?.split('/');
 
-        if (pathElements == null || pathElements[0] != '') {
-          return null;
-        }
+              if (pathElements == null || pathElements[0] != '') {
+                return null;
+              }
 
-        if (pathElements[1] == 'editCard') {
-          return MaterialPageRoute<bool>(
-            builder: (BuildContext context) => EditCard(listId: pathElements[2]),
-          );
-        }
-        return null;
-      },
+              if (pathElements[1] == 'editCard') {
+                return MaterialPageRoute<bool>(
+                  builder: (BuildContext context) =>
+                      EditCard(listId: pathElements[2]),
+                );
+              }
+              return null;
+            },
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             title: "Test",
-            home: AppToolBar(),
+            home: isAuthenticated? AuthenticatedAppToolBar() : UnauthenticatedAppToolBar(),
           );
         }
 

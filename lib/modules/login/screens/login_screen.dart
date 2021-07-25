@@ -83,8 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       textInputAction: TextInputAction.next,
                       onEditingComplete: () => node.nextFocus(),
                     ),
-                    SizedBox(height: 8),
-                    SizedBox(height: 8),
+                    SizedBox(height: 16),
                     ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
