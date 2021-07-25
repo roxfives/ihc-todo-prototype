@@ -1,4 +1,3 @@
-import 'package:boardview/boardview.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -11,6 +10,7 @@ import 'package:todo_app/modules/legal/screens/about_screen.dart';
 import 'package:todo_app/modules/legal/screens/legal_screen.dart';
 import 'package:todo_app/modules/login/screens/login_screen.dart';
 import 'package:todo_app/modules/login/screens/register_screen.dart';
+import 'package:todo_app/modules/onboard/screens/onboard.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +70,7 @@ class _AppState extends State<TodoApp> {
               '/editCard': (context) => EditCard(),
               '/about': (context) => AboutScreen(),
               '/legal': (context) => LegalScreen(),
+              '/help': (context) => OnBoardScreen(),
             },
             onGenerateRoute: (RouteSettings settings) {
               final List<String>? pathElements = settings.name?.split('/');

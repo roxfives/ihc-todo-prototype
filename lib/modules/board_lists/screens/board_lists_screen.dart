@@ -87,6 +87,13 @@ class _BoardListsState extends State<BoardLists> {
               },
             ),
             ListTile(
+              leading: const Icon(Icons.help),
+              title: Text(AppLocalizations.of(context)!.help),
+              onTap: () {
+                Navigator.pushNamed(context, '/help');
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.info),
               title: Text(AppLocalizations.of(context)!.about),
               onTap: () {
