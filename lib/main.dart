@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,8 +6,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:todo_app/modules/board_lists/screens/board_lists_screen.dart';
 import 'package:todo_app/modules/edit_card/screens/edit_card_screen.dart';
+import 'package:todo_app/modules/legal/screens/about_screen.dart';
+import 'package:todo_app/modules/legal/screens/legal_screen.dart';
 import 'package:todo_app/modules/login/screens/login_screen.dart';
 import 'package:todo_app/modules/login/screens/register_screen.dart';
+import 'package:todo_app/modules/onboard/screens/onboard.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,13 +24,20 @@ void main() {
 class TodoApp extends StatefulWidget {
   _AppState createState() => _AppState();
 }
-
-class AppToolBar extends StatelessWidget {
-  const AppToolBar() : super();
+class UnauthenticatedAppToolBar extends StatelessWidget {
+  const UnauthenticatedAppToolBar() : super();
 
   @override
   Widget build(BuildContext context) {
-    return LoginScreen();
+    return  LoginScreen();
+  }
+}
+class AuthenticatedAppToolBar extends StatelessWidget {
+  const AuthenticatedAppToolBar() : super();
+
+  @override
+  Widget build(BuildContext context) {
+    return  BoardLists();
   }
 }
 
@@ -49,11 +60,17 @@ class _AppState extends State<TodoApp> {
 
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
+          var isAuthenticated = FirebaseAuth.instance.currentUser != null;
+
           return MaterialApp(
             routes: {
               '/home': (context) => BoardLists(),
               '/register': (context) => RegisterScreen(),
+              '/signin': (context) => LoginScreen(),
               '/editCard': (context) => EditCard(),
+              '/about': (context) => AboutScreen(),
+              '/legal': (context) => LegalScreen(),
+              '/help': (context) => OnBoardScreen(),
             },
             onGenerateRoute: (RouteSettings settings) {
               final List<String>? pathElements = settings.name?.split('/');
@@ -87,7 +104,7 @@ class _AppState extends State<TodoApp> {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             title: "Test",
-            home: AppToolBar(),
+            home: isAuthenticated? AuthenticatedAppToolBar() : UnauthenticatedAppToolBar(),
           );
         }
 

@@ -77,10 +77,27 @@ class _BoardListsState extends State<BoardLists> {
                       decoration: TextDecoration.none)),
             ),
             ListTile(
-              leading: const Icon(Icons.flight_land),
-              title: Text('Sign out'),
+              leading: const Icon(Icons.exit_to_app),
+              title: Text(AppLocalizations.of(context)!.sign_out),
               onTap: () {
-                Navigator.pop(context);
+                this.signOut().then((value) => {
+                      Navigator.of(context).popUntil((route) => route.isFirst),
+                      Navigator.popAndPushNamed(context, '/signin'),
+                    });
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.help),
+              title: Text(AppLocalizations.of(context)!.help),
+              onTap: () {
+                Navigator.pushNamed(context, '/help');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: Text(AppLocalizations.of(context)!.about),
+              onTap: () {
+                Navigator.pushNamed(context, '/about');
               },
             ),
           ],
@@ -116,5 +133,13 @@ class _BoardListsState extends State<BoardLists> {
         ),
       ),
     );
+  }
+
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (e) {
+      print(e);
+    }
   }
 }
