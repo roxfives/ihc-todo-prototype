@@ -4,6 +4,7 @@ import 'package:boardview/board_list.dart';
 import 'package:boardview/boardview_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:boardview/boardview.dart';
+import 'package:intl/intl.dart';
 import 'package:todo_app/data/todo_provider.dart';
 import 'package:todo_app/entities/list_entity.dart';
 import 'package:todo_app/entities/todo_entity.dart';
@@ -190,7 +191,7 @@ class _BoardViewExample extends State<BoardViewExample> {
                       ],
                     ),
                     title: Text(itemObject.task),
-                    subtitle: Text('Prazo: amanhã'),
+                    subtitle: Text('Prazo: ' + DateFormat('d/M/y').format(itemObject.dueDate)),
                   ),
                 ),
                 Padding(
