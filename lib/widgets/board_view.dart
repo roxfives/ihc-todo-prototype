@@ -1,4 +1,5 @@
 import 'package:boardview/board_item.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:boardview/board_list.dart';
 import 'package:boardview/boardview_controller.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +19,10 @@ class BoardViewExample extends StatefulWidget {
 
 class _BoardViewExample extends State<BoardViewExample> {
   late TextEditingController _controller;
-  final listsProvider = ListProvider();
-  final todosProvider = TodoProvider();
+  final _listsProvider = ListProvider();
+  final _todosProvider = TodoProvider();
+
+  final _formKey = GlobalKey<FormState>();
 
   //Can be used to animate to different sections of the BoardView
   final BoardViewController boardViewController = new BoardViewController();
@@ -40,7 +43,7 @@ class _BoardViewExample extends State<BoardViewExample> {
   Widget build(BuildContext context) {
     return Center(
       child: FutureBuilder<List<ListEntity>>(
-        future: listsProvider.fetchLists(),
+        future: _listsProvider.fetchLists(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             final List<String> lists = [];
@@ -50,7 +53,7 @@ class _BoardViewExample extends State<BoardViewExample> {
             });
 
             return FutureBuilder<List<List<TodoEntity>>>(
-              future: todosProvider.fetchTodosMultiLists(lists),
+              future: _todosProvider.fetchTodosMultiLists(lists),
               builder: (BuildContext context, AsyncSnapshot<dynamic> snap) {
                 final List<BoardList> _lists = [];
 
@@ -77,27 +80,54 @@ class _BoardViewExample extends State<BoardViewExample> {
                                   showDialog(
                                     context: context,
                                     builder: (context) {
-                                      return SimpleDialog(
-                                        title: Text('Criar Lista'),
-                                        children: [
-                                          TextField(
-                                            controller: _controller,
-                                          ),
-                                          MaterialButton(
-                                            onPressed: () {
-                                              listsProvider
-                                                  .addList(
-                                                    _controller.value.text,
-                                                    '0',
-                                                  )
-                                                  .whenComplete(
-                                                      () => setState(() {}));
+                                      return Form(
+                                        key: _formKey,
+                                        child: SimpleDialog(
+                                          title: Text('Criar Lista'),
+                                          children: [
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16.0),
+                                              child: TextFormField(
+                                                validator: (value) {
+                                                  if (value == '') {
+                                                    return AppLocalizations.of(
+                                                            context)!
+                                                        .emptyField;
+                                                  }
+                                                  return null;
+                                                },
+                                                controller: _controller,
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16.0),
+                                              child: MaterialButton(
+                                                onPressed: () {
+                                                  if (_formKey.currentState !=
+                                                          null &&
+                                                      _formKey.currentState!
+                                                          .validate()) {
+                                                    _listsProvider
+                                                        .addList(
+                                                          _controller
+                                                              .value.text,
+                                                          '0',
+                                                        )
+                                                        .whenComplete(() =>
+                                                            setState(() {}));
 
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('Adicionar'),
-                                          )
-                                        ],
+                                                    Navigator.pop(context);
+                                                  }
+                                                },
+                                                child: Text('Adicionar'),
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       );
                                     },
                                   );
@@ -137,6 +167,27 @@ class _BoardViewExample extends State<BoardViewExample> {
                     leading: Icon(
                       Category.getIcon(itemObject.category),
                       color: Category.getColorContrast(itemObject.category),
+                    ),
+                    trailing: PopupMenuButton(
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'edit':
+                            _navigateToTodo(
+                                context, itemObject.list, itemObject.id);
+                            break;
+                          case 'remove':
+                            _todosProvider.removeTodo(itemObject.id);
+                            setState(() {});
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          child: Text('Editar'),
+                          value: 'edit',
+                        ),
+                        PopupMenuItem(child: Text('Remover'), value: 'remove'),
+                      ],
                     ),
                     title: Text(itemObject.task),
                     subtitle: Text('Prazo: amanhã'),
@@ -209,7 +260,7 @@ class _BoardViewExample extends State<BoardViewExample> {
       ],
       items: [
         ...items,
-         BoardItem(
+        BoardItem(
           draggable: false,
           item: Container(
             margin: EdgeInsets.all(8.0),
@@ -232,7 +283,13 @@ class _BoardViewExample extends State<BoardViewExample> {
   }
 
   void _navigateToList(BuildContext context, String id) async {
-    await Navigator.pushNamed(context, '/editCard/' + id);
+    await Navigator.pushNamed(context, '/editCard/$id');
+    setState(() {});
+  }
+
+  void _navigateToTodo(
+      BuildContext context, String listId, String todoId) async {
+    await Navigator.pushNamed(context, '/editCard/$listId/$todoId');
     setState(() {});
   }
 }

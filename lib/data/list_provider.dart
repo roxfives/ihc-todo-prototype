@@ -50,4 +50,40 @@ class ListProvider {
     await file.writeAsString(jsonEncode(json));
     return true;
   }
+
+  Future<bool> removeList(String id) async {
+    final file = await _localFile;
+
+    final lists = await fetchLists();
+    lists.removeWhere((element) => element.id == id);
+
+    final json = ListArray(lists).toJson();
+
+    await file.writeAsString(jsonEncode(json));
+    return true;
+  }
+
+  Future<bool> editList(
+    String id, {
+    String? name,
+    String? board,
+    bool? complete,
+  }) async {
+    final file = await _localFile;
+
+    final lists = await fetchLists();
+    final i = lists.indexWhere((element) => element.id == id);
+    lists[i] = ListEntity(
+      id,
+      complete ?? lists[i].complete,
+      lists[i].createdAt,
+      name ?? lists[i].name,
+      board ?? lists[i].board,
+    );
+
+    final json = ListArray(lists).toJson();
+
+    await file.writeAsString(jsonEncode(json));
+    return true;
+  }
 }

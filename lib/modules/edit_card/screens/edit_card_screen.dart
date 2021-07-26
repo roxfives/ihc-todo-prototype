@@ -9,50 +9,67 @@ import 'package:todo_app/widgets/circle_painter.dart';
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class EditCard extends StatefulWidget {
-  const EditCard({Key? key, this.listId}) : super(key: key);
+  const EditCard({Key? key, this.listId, this.todoId}) : super(key: key);
 
   final String? listId;
+  final String? todoId;
 
   @override
-  State<EditCard> createState() => _EditCardState(listId: this.listId);
+  State<EditCard> createState() =>
+      _EditCardState(listId: this.listId, todoId: this.todoId);
 }
 
 class _EditCardState extends State<EditCard> {
   String? listId;
+  String? todoId;
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final listProvider = ListProvider();
-  final todosProvider = TodoProvider();
-  final List<MaterialColor> colorList = [Colors.red, Colors.blue, Colors.green];
+  final _listProvider = ListProvider();
+  final _todosProvider = TodoProvider();
 
-  MaterialColor dropdownValue = Colors.red;
-  String listValue = '';
-  DateTime selectedDate = DateTime.now();
-  TimeOfDay selectedTime = TimeOfDay.now();
+  int _dropdownValue = 0;
+  String _listValue = '';
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay.now();
 
-  _EditCardState({this.listId}) {
-    listValue = this.listId ?? '';
+  Future<void> fetchAndSetTodo(String id) async {
+    final todo = await _todosProvider.fetchTodo(id);
+
+    setState(() {
+      _nameController.text = todo.task;
+      _descriptionController.text = todo.note;
+      _dropdownValue = int.parse(todo.category);
+      _selectedDate = todo.dueDate;
+      _selectedTime = TimeOfDay.fromDateTime(todo.dueDate);
+    });
+  }
+
+  _EditCardState({this.listId, this.todoId}) {
+    _listValue = this.listId ?? '';
+    if (this.todoId != null) {
+      fetchAndSetTodo(this.todoId!);
+    }
   }
 
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
-        initialDate: selectedDate,
+        initialDate: _selectedDate,
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2015),
         lastDate: DateTime(2101));
     if (picked != null) {
       setState(() {
-        selectedDate = picked;
+        _selectedDate = picked;
         _dateController.text = DateFormat.yMd().add_jm().format(DateTime(
-            selectedDate.year,
-            selectedDate.month,
-            selectedDate.day,
-            selectedTime.hour,
-            selectedTime.minute));
+            _selectedDate.year,
+            _selectedDate.month,
+            _selectedDate.day,
+            _selectedTime.hour,
+            _selectedTime.minute));
       });
       _selectTime(context);
     }
@@ -61,17 +78,17 @@ class _EditCardState extends State<EditCard> {
   Future<Null> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: _selectedTime,
     );
     if (picked != null)
       setState(() {
-        selectedTime = picked;
+        _selectedTime = picked;
         _dateController.text = DateFormat.yMd().add_jm().format(DateTime(
-            selectedDate.year,
-            selectedDate.month,
-            selectedDate.day,
-            selectedTime.hour,
-            selectedTime.minute));
+            _selectedDate.year,
+            _selectedDate.month,
+            _selectedDate.day,
+            _selectedTime.hour,
+            _selectedTime.minute));
       });
   }
 
@@ -79,13 +96,41 @@ class _EditCardState extends State<EditCard> {
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
 
-    List<DropdownMenuItem<MaterialColor>> items = colorList.map((item) {
-      return DropdownMenuItem<MaterialColor>(
+    MaterialColor getColor(int item) {
+      if (item == 0) {
+        return Colors.red;
+      } else if (item == 1) {
+        return Colors.blue;
+      } else if (item == 2) {
+        return Colors.green;
+      }
+      return Colors.grey;
+    }
+
+    String getColorName(int item) {
+      if (item == 0) {
+        return 'Vermelho';
+      } else if (item == 1) {
+        return 'Azul';
+      } else if (item == 2) {
+        return 'Verde';
+      }
+      return '';
+    }
+
+    List<DropdownMenuItem<int>> items = [0, 1, 2].map((item) {
+      return DropdownMenuItem<int>(
         value: item,
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0),
-          child: CustomPaint(
-            foregroundPainter: CirclePainter(8.0, item),
+          child: Semantics(
+            label: getColorName(item),
+            child: CustomPaint(
+              foregroundPainter: CirclePainter(
+                8.0,
+                getColor(item),
+              ),
+            ),
           ),
         ),
       );
@@ -152,33 +197,14 @@ class _EditCardState extends State<EditCard> {
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     if (_formKey.currentState != null &&
-      //         _formKey.currentState!.validate()) {
-      //       todosProvider
-      //           .addTodo(
-      //               _nameController.text,
-      //               _descriptionController.text,
-      //               dropdownValue.value.toString(),
-      //               DateTime(
-      //                   selectedDate.year,
-      //                   selectedDate.month,
-      //                   selectedDate.day,
-      //                   selectedTime.hour,
-      //                   selectedTime.minute),
-      //               listValue)
-      //           .then((value) => Navigator.pop(context));
-      //     }
-      //   },
-      //   child: Icon(Icons.check),
-      // ),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(AppLocalizations.of(context)!.editCard),
+        title: this.todoId != null
+            ? Text(AppLocalizations.of(context)!.editCard)
+            : Text('Criar Tarefa'),
         actions: [
           IconButton(
             tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
@@ -200,11 +226,11 @@ class _EditCardState extends State<EditCard> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 FutureBuilder<List<ListEntity>>(
-                    future: listProvider.fetchLists(),
+                    future: _listProvider.fetchLists(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return DropdownButtonFormField(
-                          value: listValue,
+                          value: _listValue,
                           validator: (value) {
                             if (value == '') {
                               return AppLocalizations.of(context)!.emptyField;
@@ -213,7 +239,7 @@ class _EditCardState extends State<EditCard> {
                           },
                           onChanged: (String? newValue) {
                             setState(() {
-                              listValue = newValue!;
+                              _listValue = newValue!;
                             });
                           },
                           items: [
@@ -281,10 +307,10 @@ class _EditCardState extends State<EditCard> {
                       padding: EdgeInsets.only(top: 11),
                       width: 50,
                       child: DropdownButtonFormField(
-                        value: dropdownValue,
-                        onChanged: (MaterialColor? newValue) {
+                        value: _dropdownValue,
+                        onChanged: (int? newValue) {
                           setState(() {
-                            dropdownValue = newValue!;
+                            _dropdownValue = newValue!;
                           });
                         },
                         items: items,
@@ -292,26 +318,53 @@ class _EditCardState extends State<EditCard> {
                     ),
                   ],
                 ),
-
                 SizedBox(height: 8),
                 ElevatedButton(
                     onPressed: () => {
                           if (_formKey.currentState != null &&
                               _formKey.currentState!.validate())
                             {
-                              todosProvider
-                                  .addTodo(
-                                      _nameController.text,
-                                      _descriptionController.text,
-                                      dropdownValue.value.toString(),
-                                      DateTime(
-                                          selectedDate.year,
-                                          selectedDate.month,
-                                          selectedDate.day,
-                                          selectedTime.hour,
-                                          selectedTime.minute),
-                                      listValue)
-                                  .then((value) => Navigator.pop(context))
+                              if (this.todoId != null)
+                                {
+                                  _todosProvider
+                                      .editTodo(
+                                        this.todoId!,
+                                        task: _nameController.text,
+                                        note: _descriptionController.text,
+                                        category: _dropdownValue.toString(),
+                                        dueDate: DateTime(
+                                          _selectedDate.year,
+                                          _selectedDate.month,
+                                          _selectedDate.day,
+                                          _selectedTime.hour,
+                                          _selectedTime.minute,
+                                        ),
+                                        list: _listValue,
+                                      )
+                                      .then(
+                                        (value) => Navigator.pop(context),
+                                      ),
+                                }
+                              else
+                                {
+                                  _todosProvider
+                                      .addTodo(
+                                        _nameController.text,
+                                        _descriptionController.text,
+                                        _dropdownValue.toString(),
+                                        DateTime(
+                                          _selectedDate.year,
+                                          _selectedDate.month,
+                                          _selectedDate.day,
+                                          _selectedTime.hour,
+                                          _selectedTime.minute,
+                                        ),
+                                        _listValue,
+                                      )
+                                      .then(
+                                        (value) => Navigator.pop(context),
+                                      ),
+                                }
                             }
                         },
                     child: const Text('Concluir'))

@@ -56,19 +56,34 @@ class _AppState extends State<TodoApp> {
               '/editCard': (context) => EditCard(),
             },
             onGenerateRoute: (RouteSettings settings) {
-        final List<String>? pathElements = settings.name?.split('/');
+              final List<String>? pathElements = settings.name?.split('/');
 
-        if (pathElements == null || pathElements[0] != '') {
-          return null;
-        }
+              if (pathElements == null || pathElements[0] != '') {
+                return null;
+              }
 
-        if (pathElements[1] == 'editCard') {
-          return MaterialPageRoute<bool>(
-            builder: (BuildContext context) => EditCard(listId: pathElements[2]),
-          );
-        }
-        return null;
-      },
+              if (pathElements[1] == 'editCard') {
+                if (pathElements.length > 3) {
+                  return MaterialPageRoute<bool>(
+                    builder: (BuildContext context) => EditCard(
+                      listId: pathElements[2],
+                      todoId: pathElements[3],
+                    ),
+                  );
+                } else if (pathElements.length > 2) {
+                  return MaterialPageRoute<bool>(
+                    builder: (BuildContext context) => EditCard(
+                      listId: pathElements[2],
+                    ),
+                  );
+                } else {
+                  return MaterialPageRoute<bool>(
+                    builder: (BuildContext context) => EditCard(),
+                  );
+                }
+              }
+              return null;
+            },
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             title: "Test",
