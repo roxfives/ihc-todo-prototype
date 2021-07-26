@@ -36,13 +36,13 @@ class _AboutScreenState extends State<AboutScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              ListTile(
-              leading: const Icon(Icons.people),
-              title: Text(AppLocalizations.of(context)!.authors),
-              onTap: () {
+            //   ListTile(
+            //   leading: const Icon(Icons.people),
+            //   title: Text(AppLocalizations.of(context)!.authors),
+            //   onTap: () {
                 
-              },
-            ),
+            //   },
+            // ),
             ListTile(
               leading: const Icon(Icons.article),
               title: Text(AppLocalizations.of(context)!.legal),
