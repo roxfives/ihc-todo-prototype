@@ -40,17 +40,17 @@ class _BoardListsState extends State<BoardLists> {
         title: Text(
             // localization.demoAppBarTitle,
             'Board Principal'),
-        actions: [
-          IconButton(
-            tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
-            icon: const Icon(
-              Icons.notifications,
-            ),
-            onPressed: () {
-              _scaffoldKey.currentState!.openEndDrawer();
-            },
-          ),
-        ],
+        // actions: [
+          // IconButton(
+          //   tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
+          //   icon: const Icon(
+          //     Icons.notifications,
+          //   ),
+          //   onPressed: () {
+          //     _scaffoldKey.currentState!.openEndDrawer();
+          //   },
+          // ),
+        // ],
       ),
       body: Center(child: BoardViewExample()),
       floatingActionButton: FloatingActionButton(
@@ -103,35 +103,35 @@ class _BoardListsState extends State<BoardLists> {
           ],
         ),
       ),
-      endDrawer: Drawer(
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.notifications_none,
-                    color: Colors.white,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text('Sem notificações no momento',
-                      style: DefaultTextStyle.of(context).style.apply(
-                          fontSizeFactor: 0.3,
-                          color: Colors.white,
-                          decoration: TextDecoration.none)),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      // endDrawer: Drawer(
+      //   child: ListView(
+      //     // Important: Remove any padding from the ListView.
+      //     padding: EdgeInsets.zero,
+      //     children: <Widget>[
+      //       DrawerHeader(
+      //         decoration: BoxDecoration(
+      //           color: Colors.blue,
+      //         ),
+      //         child: Column(
+      //           children: [
+      //             Icon(
+      //               Icons.notifications_none,
+      //               color: Colors.white,
+      //             ),
+      //             SizedBox(
+      //               height: 20,
+      //             ),
+      //             Text('Sem notificações no momento',
+      //                 style: DefaultTextStyle.of(context).style.apply(
+      //                     fontSizeFactor: 0.3,
+      //                     color: Colors.white,
+      //                     decoration: TextDecoration.none)),
+      //           ],
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 
