@@ -25,8 +25,6 @@ class _BoardViewExample extends State<BoardViewExample> {
   final _listsProvider = ListProvider();
   final _todosProvider = TodoProvider();
 
-  final _formKey = GlobalKey<FormState>();
-
   //Can be used to animate to different sections of the BoardView
   final BoardViewController boardViewController = new BoardViewController();
 
@@ -54,6 +52,7 @@ class _BoardViewExample extends State<BoardViewExample> {
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    updateData();
   }
 
   @override
@@ -100,8 +99,10 @@ class _BoardViewExample extends State<BoardViewExample> {
                             showDialog(
                               context: context,
                               builder: (context) {
+                                final key = GlobalKey<FormState>();
+
                                 return Form(
-                                  key: _formKey,
+                                  key: key,
                                   child: AlertDialog(
                                       title: Text('Criar Lista'),
                                       content: TextFormField(
@@ -122,8 +123,8 @@ class _BoardViewExample extends State<BoardViewExample> {
                                         ),
                                         MaterialButton(
                                           onPressed: () {
-                                            if (_formKey.currentState != null &&
-                                                _formKey.currentState!
+                                            if (key.currentState != null &&
+                                                key.currentState!
                                                     .validate()) {
                                               _listsProvider
                                                   .addList(
@@ -319,8 +320,10 @@ class _BoardViewExample extends State<BoardViewExample> {
                             showDialog(
                               context: context,
                               builder: (context) {
+                                final key = GlobalKey<FormState>();
+
                                 return Form(
-                                  key: _formKey,
+                                  key: key,
                                   child: AlertDialog(
                                     title: Text('Renomear Lista'),
                                     content: TextFormField(
@@ -340,8 +343,8 @@ class _BoardViewExample extends State<BoardViewExample> {
                                       ),
                                       MaterialButton(
                                         onPressed: () {
-                                          if (_formKey.currentState != null &&
-                                              _formKey.currentState!
+                                          if (key.currentState != null &&
+                                              key.currentState!
                                                   .validate()) {
                                             _listsProvider
                                                 .editList(
