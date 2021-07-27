@@ -29,7 +29,7 @@ final List<OnBoardModel> onBoardData = [
     imgUrl: "assets/images/04_add_task.png",
   ),
   const OnBoardModel(
-    title: "Personalize a sua tarefa de acordo com as suas preferÇencias e necessidades",
+    title: "Personalize a sua tarefa de acordo com as suas preferências e necessidades",
     description:
         "Escolha até quando ela deve executada, sua categoria, nome e descrição",
     imgUrl: 'assets/images/05_edit_task.png',
