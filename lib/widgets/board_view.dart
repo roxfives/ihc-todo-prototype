@@ -197,11 +197,34 @@ class _BoardViewExample extends State<BoardViewExample> {
                                 context, itemObject.list, itemObject.id);
                             break;
                           case 'remove':
-                            _todosProvider
-                                .removeTodo(itemObject.id)
-                                .then((value) => setState(() {
-                                      updateData();
-                                    }));
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Remover Tarefa'),
+                                  content: Text(
+                                      'Deseja remover essa tarefa? Esta ação é irreversível.'),
+                                  actions: [
+                                    MaterialButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('Cancelar'),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        _todosProvider
+                                            .removeTodo(itemObject.id)
+                                            .then((value) => setState(() {
+                                          updateData();
+                                        }));
+
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('Confirmar'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                             break;
                         }
                       },
@@ -339,11 +362,34 @@ class _BoardViewExample extends State<BoardViewExample> {
                             );
                             break;
                           case 'remove':
-                            _listsProvider
-                                .removeList(list.id)
-                                .then((value) => setState(() {
-                                      updateData();
-                                    }));
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: Text('Remover Lista'),
+                                  content: Text(
+                                      'Deseja remover essa lista? Esta ação é irreversível.'),
+                                  actions: [
+                                    MaterialButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('Cancelar'),
+                                    ),
+                                    MaterialButton(
+                                      onPressed: () {
+                                        _listsProvider
+                                            .removeList(list.id)
+                                            .then((value) => setState(() {
+                                                  updateData();
+                                                }));
+
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('Confirmar'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                             break;
                         }
                       },
