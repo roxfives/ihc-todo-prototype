@@ -41,6 +41,9 @@ class _BoardViewExample extends State<BoardViewExample> {
     final _todosProvider = TodoProvider();
 
     final lists = await _listsProvider.fetchLists();
+    if (lists.isEmpty) {
+      _currentStreamCtrl.sink.add(Tuple2(lists, []));
+    }
     final List<String> listsIds = lists.map((element) => element.id).toList();
     final todos = await _todosProvider.fetchTodosMultiLists(listsIds);
 
@@ -96,28 +99,25 @@ class _BoardViewExample extends State<BoardViewExample> {
                               builder: (context) {
                                 return Form(
                                   key: _formKey,
-                                  child: SimpleDialog(
-                                    title: Text('Criar Lista'),
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: TextFormField(
-                                          validator: (value) {
-                                            if (value == '') {
-                                              return AppLocalizations.of(
-                                                      context)!
-                                                  .emptyField;
-                                            }
-                                            return null;
-                                          },
-                                          controller: _controller,
-                                        ),
+                                  child: AlertDialog(
+                                      title: Text('Criar Lista'),
+                                      content: TextFormField(
+                                        validator: (value) {
+                                          if (value == '') {
+                                            return AppLocalizations.of(context)!
+                                                .emptyField;
+                                          }
+                                          return null;
+                                        },
+                                        controller: _controller,
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: MaterialButton(
+                                      actions: [
+                                        MaterialButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: Text('Cancelar'),
+                                        ),
+                                        MaterialButton(
                                           onPressed: () {
                                             if (_formKey.currentState != null &&
                                                 _formKey.currentState!
@@ -137,9 +137,7 @@ class _BoardViewExample extends State<BoardViewExample> {
                                           },
                                           child: Text('Adicionar'),
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ]),
                                 );
                               },
                             );
@@ -297,45 +295,43 @@ class _BoardViewExample extends State<BoardViewExample> {
                               builder: (context) {
                                 return Form(
                                   key: _formKey,
-                                  child: SimpleDialog(
+                                  child: AlertDialog(
                                     title: Text('Renomear Lista'),
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: TextFormField(
-                                          validator: (value) {
-                                            if (value == '') {
-                                              return AppLocalizations.of(context)!
-                                                  .emptyField;
-                                            }
-                                            return null;
-                                          },
-                                          controller: _controller,
-                                        ),
+                                    content: TextFormField(
+                                      validator: (value) {
+                                        if (value == '') {
+                                          return AppLocalizations.of(context)!
+                                              .emptyField;
+                                        }
+                                        return null;
+                                      },
+                                      controller: _controller,
+                                    ),
+                                    actions: [
+                                      MaterialButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: Text('Cancelar'),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 16.0),
-                                        child: MaterialButton(
-                                          onPressed: () {
-                                            if (_formKey.currentState != null &&
-                                                _formKey.currentState!.validate()) {
-                                              _listsProvider
-                                                  .editList(
-                                                list.id,
-                                                name: _controller.value.text,
-                                              )
-                                                  .whenComplete(() => setState(() {
-                                                updateData();
-                                              }));
+                                      MaterialButton(
+                                        onPressed: () {
+                                          if (_formKey.currentState != null &&
+                                              _formKey.currentState!
+                                                  .validate()) {
+                                            _listsProvider
+                                                .editList(
+                                                  list.id,
+                                                  name: _controller.value.text,
+                                                )
+                                                .whenComplete(
+                                                    () => setState(() {
+                                                          updateData();
+                                                        }));
 
-                                              Navigator.pop(context);
-                                            }
-                                          },
-                                          child: Text('Confirmar'),
-                                        ),
-                                      )
+                                            Navigator.pop(context);
+                                          }
+                                        },
+                                        child: Text('Confirmar'),
+                                      ),
                                     ],
                                   ),
                                 );
