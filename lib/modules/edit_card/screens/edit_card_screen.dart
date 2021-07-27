@@ -123,44 +123,13 @@ class _EditCardState extends State<EditCard> {
       return DropdownMenuItem<int>(
         value: item,
         child: Semantics(
-          label: TodoEntity.getIconName(item),
-          child: Icon(TodoEntity.getIcon(item))
-        ),
+            label: TodoEntity.getIconName(item),
+            child: Icon(TodoEntity.getIcon(item))),
       );
     }).toList();
 
     return Scaffold(
       key: _scaffoldKey,
-      drawer: Drawer(
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text('O que vamos fazer hoje, Patrícia?',
-                  style: DefaultTextStyle.of(context).style.apply(
-                      fontSizeFactor: 0.6,
-                      color: Colors.white,
-                      decoration: TextDecoration.none)),
-            ),
-            ListTile(
-              title: Text('Board Principal'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Board Secundária'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
