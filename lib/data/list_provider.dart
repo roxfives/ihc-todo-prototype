@@ -72,6 +72,7 @@ class ListProvider {
     final file = await _localFile;
 
     final lists = await fetchLists();
+
     final i = lists.indexWhere((element) => element.id == id);
     lists[i] = ListEntity(
       id,

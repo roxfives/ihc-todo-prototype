@@ -13,7 +13,8 @@ class TodoArray {
 
   TodoArray.fromJson(Map<String, dynamic> json) : items = json['items'];
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'items': List.from(items.map((e) => e.toJson())),
       };
 }
@@ -47,12 +48,15 @@ class TodoProvider {
       final contents = await file.readAsString();
       final todos = List.from(jsonDecode(contents)['items']);
 
-      return todos
+      final result = todos
           .map((e) => TodoEntity.fromJson(Map<String, Object>.from(e)))
           .where((element) => element.list == list)
           .toList();
+
+      result.sort((a, b) => a.place.compareTo(b.place));
+
+      return result;
     } catch (e) {
-      log(e.toString());
       return [];
     }
   }
@@ -69,7 +73,12 @@ class TodoProvider {
 
       return lists
           .map(
-              (list) => todos.where((element) => element.list == list).toList())
+              (list) {
+            final result = todos.where((element) => element.list == list)
+                .toList();
+            result.sort((a, b) => a.place.compareTo(b.place));
+            return result;
+          })
           .toList();
     } catch (e) {
       final List<TodoEntity> todos = [];
@@ -82,24 +91,34 @@ class TodoProvider {
     return todos.firstWhere((element) => element.id == id);
   }
 
-  Future<bool> addTodo(String task, String note, String category,
-      DateTime dueDate, String list) async {
+  Future<bool> addTodo(String task, String note, int category, DateTime dueDate,
+      String list, int categoryColor) async {
     final file = await _localFile;
 
+    final curr = await fetchTodosList(list);
     final todos = await fetchAllTodos();
     final json = TodoArray([
       ...todos,
-      TodoEntity(task, Uuid().v4(), note, false, category, false,
-          DateTime.now(), dueDate, list)
+      TodoEntity(
+        task,
+        Uuid().v4(),
+        note,
+        false,
+        category,
+        false,
+        DateTime.now(),
+        dueDate,
+        list,
+        curr.length,
+        categoryColor,
+      )
     ]).toJson();
 
     await file.writeAsString(jsonEncode(json));
     return true;
   }
 
-  Future<bool> removeTodo(
-    String id,
-  ) async {
+  Future<bool> removeTodo(String id,) async {
     final file = await _localFile;
 
     final todos = await fetchAllTodos();
@@ -111,14 +130,17 @@ class TodoProvider {
     return true;
   }
 
-  Future<bool> editTodo(String id,
-      {String? task,
-      String? note,
-      bool? complete,
-      String? category,
-      bool? isFavorite,
-      DateTime? dueDate,
-      String? list}) async {
+  Future<bool> editTodo(String id, {
+    String? task,
+    String? note,
+    bool? complete,
+    int? category,
+    bool? isFavorite,
+    DateTime? dueDate,
+    String? list,
+    int? place,
+    int? categoryColor,
+  }) async {
     final file = await _localFile;
 
     final todos = await fetchAllTodos();
@@ -134,11 +156,31 @@ class TodoProvider {
       todos[i].createdAt,
       dueDate ?? todos[i].dueDate,
       list ?? todos[i].list,
+      place ?? todos[i].place,
+      categoryColor ?? todos[i].categoryColor,
     );
 
     final json = TodoArray(todos).toJson();
 
     await file.writeAsString(jsonEncode(json));
+    return true;
+  }
+
+  Future<bool> placeTodo(TodoEntity todo, String? list, int? place) async {
+    final newList = list ?? todo.list;
+
+    if (place == null) {
+      await editTodo(todo.id, list: newList);
+      return true;
+    }
+
+    final curr = await fetchTodosList(newList);
+    curr.removeWhere((element) => element.id == todo.id);
+    curr.insert(place, todo);
+    for (var i = 0; i < curr.length; i++) {
+      await editTodo(curr[i].id, list: newList, place: i);
+    }
+
     return true;
   }
 }

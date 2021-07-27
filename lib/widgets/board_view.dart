@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:boardview/board_item.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:boardview/board_list.dart';
@@ -8,8 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:todo_app/data/todo_provider.dart';
 import 'package:todo_app/entities/list_entity.dart';
 import 'package:todo_app/entities/todo_entity.dart';
-import 'package:todo_app/utils/category.dart';
 import 'package:todo_app/data/list_provider.dart';
+import 'package:tuple/tuple.dart';
 
 class BoardViewExample extends StatefulWidget {
   const BoardViewExample({Key? key}) : super(key: key);
@@ -28,6 +30,23 @@ class _BoardViewExample extends State<BoardViewExample> {
   //Can be used to animate to different sections of the BoardView
   final BoardViewController boardViewController = new BoardViewController();
 
+  final _currentStreamCtrl = StreamController<
+      Tuple2<List<ListEntity>, List<List<TodoEntity>>>>.broadcast();
+
+  Stream<Tuple2<List<ListEntity>, List<List<TodoEntity>>>> get onChange =>
+      _currentStreamCtrl.stream;
+
+  Future<void> updateData() async {
+    final _listsProvider = ListProvider();
+    final _todosProvider = TodoProvider();
+
+    final lists = await _listsProvider.fetchLists();
+    final List<String> listsIds = lists.map((element) => element.id).toList();
+    final todos = await _todosProvider.fetchTodosMultiLists(listsIds);
+
+    _currentStreamCtrl.sink.add(Tuple2(lists, todos));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -37,125 +56,126 @@ class _BoardViewExample extends State<BoardViewExample> {
   @override
   void dispose() {
     _controller.dispose();
+    _currentStreamCtrl.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: FutureBuilder<List<ListEntity>>(
-        future: _listsProvider.fetchLists(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+      child: StreamBuilder<Tuple2<List<ListEntity>, List<List<TodoEntity>>>>(
+        stream: onChange,
+        builder: (BuildContext context,
+            AsyncSnapshot<Tuple2<List<ListEntity>, List<List<TodoEntity>>>>
+                snapshot) {
           if (snapshot.hasData) {
-            final List<String> lists = [];
+            final List<BoardList> _lists = [];
 
-            snapshot.data.forEach((e) {
-              lists.add(e.id);
-            });
+            for (int i = 0; i < snapshot.data!.item1.length; i++) {
+              _lists.add(_createBoardList(
+                      snapshot.data!.item1[i], snapshot.data!.item2[i])
+                  as BoardList);
+            }
 
-            return FutureBuilder<List<List<TodoEntity>>>(
-              future: _todosProvider.fetchTodosMultiLists(lists),
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snap) {
-                final List<BoardList> _lists = [];
-
-                if (snap.hasData) {
-                  for (int i = 0; i < snapshot.data.length; i++) {
-                    _lists.add(_createBoardList(snapshot.data[i], snap.data[i])
-                        as BoardList);
-                  }
-
-                  return BoardView(
-                    width: 350,
-                    lists: [
-                      ..._lists,
-                      BoardList(
-                        draggable: false,
-                        backgroundColor: Colors.white60,
-                        items: [
-                          BoardItem(
-                            draggable: false,
-                            item: Container(
-                              margin: EdgeInsets.all(8.0),
-                              child: MaterialButton(
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return Form(
-                                        key: _formKey,
-                                        child: SimpleDialog(
-                                          title: Text('Criar Lista'),
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 16.0),
-                                              child: TextFormField(
-                                                validator: (value) {
-                                                  if (value == '') {
-                                                    return AppLocalizations.of(
-                                                            context)!
-                                                        .emptyField;
-                                                  }
-                                                  return null;
-                                                },
-                                                controller: _controller,
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 16.0),
-                                              child: MaterialButton(
-                                                onPressed: () {
-                                                  if (_formKey.currentState !=
-                                                          null &&
-                                                      _formKey.currentState!
-                                                          .validate()) {
-                                                    _listsProvider
-                                                        .addList(
-                                                          _controller
-                                                              .value.text,
-                                                          '0',
-                                                        )
-                                                        .whenComplete(() =>
-                                                            setState(() {}));
-
-                                                    Navigator.pop(context);
-                                                  }
-                                                },
-                                                child: Text('Adicionar'),
-                                              ),
-                                            )
-                                          ],
+            return BoardView(
+              width: 350,
+              lists: [
+                ..._lists,
+                BoardList(
+                  draggable: false,
+                  backgroundColor: Colors.white60,
+                  items: [
+                    BoardItem(
+                      draggable: false,
+                      item: Container(
+                        margin: EdgeInsets.all(8.0),
+                        child: MaterialButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Form(
+                                  key: _formKey,
+                                  child: SimpleDialog(
+                                    title: Text('Criar Lista'),
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: TextFormField(
+                                          validator: (value) {
+                                            if (value == '') {
+                                              return AppLocalizations.of(
+                                                      context)!
+                                                  .emptyField;
+                                            }
+                                            return null;
+                                          },
+                                          controller: _controller,
                                         ),
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Text('Adicionar Lista'),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                    boardViewController: boardViewController,
-                  );
-                }
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: MaterialButton(
+                                          onPressed: () {
+                                            if (_formKey.currentState != null &&
+                                                _formKey.currentState!
+                                                    .validate()) {
+                                              _listsProvider
+                                                  .addList(
+                                                    _controller.value.text,
+                                                    '0',
+                                                  )
+                                                  .whenComplete(
+                                                      () => setState(() {
+                                                            updateData();
+                                                          }));
 
-                return CircularProgressIndicator();
-              },
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                          child: Text('Adicionar'),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Text('Adicionar Lista'),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+              boardViewController: boardViewController,
             );
           }
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         },
       ),
     );
   }
 
+  Future<void> _reorderTodo(TodoEntity todo, int? listIndex, int? place) async {
+    if (listIndex != null) {
+      final lists = await _listsProvider.fetchLists();
+      await _todosProvider.placeTodo(todo, lists[listIndex].id, place);
+    } else {
+      await _todosProvider.placeTodo(todo, null, place);
+    }
+  }
+
   Widget buildBoardItem(TodoEntity itemObject) {
     return BoardItem(
+      onDropItem: (listIndex, place, c, d, e) {
+        _reorderTodo(itemObject, listIndex, place).then((value) => setState(() {
+              updateData();
+            }));
+      },
       item: Container(
         margin: EdgeInsets.all(8.0),
         child: Card(
@@ -163,11 +183,13 @@ class _BoardViewExample extends State<BoardViewExample> {
             child: Column(
               children: [
                 Container(
-                  color: Category.getColor(itemObject.category),
                   child: ListTile(
-                    leading: Icon(
-                      Category.getIcon(itemObject.category),
-                      color: Category.getColorContrast(itemObject.category),
+                    leading: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        itemObject.icon,
+                        color: itemObject.color,
+                      ),
                     ),
                     trailing: PopupMenuButton(
                       onSelected: (value) {
@@ -177,8 +199,11 @@ class _BoardViewExample extends State<BoardViewExample> {
                                 context, itemObject.list, itemObject.id);
                             break;
                           case 'remove':
-                            _todosProvider.removeTodo(itemObject.id);
-                            setState(() {});
+                            _todosProvider
+                                .removeTodo(itemObject.id)
+                                .then((value) => setState(() {
+                                      updateData();
+                                    }));
                             break;
                         }
                       },
@@ -191,7 +216,8 @@ class _BoardViewExample extends State<BoardViewExample> {
                       ],
                     ),
                     title: Text(itemObject.task),
-                    subtitle: Text('Prazo: ' + DateFormat('d/M/y').format(itemObject.dueDate)),
+                    subtitle: Text('Prazo: ' +
+                        DateFormat('d/M/y').format(itemObject.dueDate)),
                   ),
                 ),
                 Padding(
@@ -204,15 +230,22 @@ class _BoardViewExample extends State<BoardViewExample> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     IconButton(
+                      tooltip:
+                          itemObject.isFavorite ? 'Desfavoritar' : 'Favoritar',
                       icon: Icon(
                           itemObject.isFavorite
                               ? Icons.favorite
                               : Icons.favorite_border,
                           color: itemObject.isFavorite
-                              ? Category.getColor(itemObject.category)
+                              ? itemObject.color
                               : Colors.black87),
                       onPressed: () {
-                        /* ... */
+                        _todosProvider
+                            .editTodo(itemObject.id,
+                                isFavorite: !itemObject.isFavorite)
+                            .then((value) => setState(() {
+                                  updateData();
+                                }));
                       },
                     ),
                     SizedBox(width: 8),
@@ -234,6 +267,7 @@ class _BoardViewExample extends State<BoardViewExample> {
     }
 
     return BoardList(
+      draggable: false,
       headerBackgroundColor: Colors.white60,
       backgroundColor: Colors.white60,
       header: [
@@ -242,11 +276,90 @@ class _BoardViewExample extends State<BoardViewExample> {
             padding: EdgeInsets.all(5),
             child: Column(
               children: [
-                Center(
-                  child: Text(
-                    list.name,
-                    style: TextStyle(fontSize: 20),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        list.name,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ),
+                    PopupMenuButton(
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'edit':
+                            setState(() {
+                              _controller.text = list.name;
+                            });
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Form(
+                                  key: _formKey,
+                                  child: SimpleDialog(
+                                    title: Text('Renomear Lista'),
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: TextFormField(
+                                          validator: (value) {
+                                            if (value == '') {
+                                              return AppLocalizations.of(context)!
+                                                  .emptyField;
+                                            }
+                                            return null;
+                                          },
+                                          controller: _controller,
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0),
+                                        child: MaterialButton(
+                                          onPressed: () {
+                                            if (_formKey.currentState != null &&
+                                                _formKey.currentState!.validate()) {
+                                              _listsProvider
+                                                  .editList(
+                                                list.id,
+                                                name: _controller.value.text,
+                                              )
+                                                  .whenComplete(() => setState(() {
+                                                updateData();
+                                              }));
+
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                          child: Text('Confirmar'),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                            break;
+                          case 'remove':
+                            _listsProvider
+                                .removeList(list.id)
+                                .then((value) => setState(() {
+                                      updateData();
+                                    }));
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          child: Text('Renomear'),
+                          value: 'edit',
+                        ),
+                        PopupMenuItem(child: Text('Remover'), value: 'remove'),
+                      ],
+                    ),
+                  ],
                 ),
                 const Divider(
                   height: 20,
@@ -285,12 +398,16 @@ class _BoardViewExample extends State<BoardViewExample> {
 
   void _navigateToList(BuildContext context, String id) async {
     await Navigator.pushNamed(context, '/editCard/$id');
-    setState(() {});
+    setState(() {
+      updateData();
+    });
   }
 
   void _navigateToTodo(
       BuildContext context, String listId, String todoId) async {
     await Navigator.pushNamed(context, '/editCard/$listId/$todoId');
-    setState(() {});
+    setState(() {
+      updateData();
+    });
   }
 }

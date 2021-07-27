@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:todo_app/data/list_provider.dart';
 import 'package:todo_app/data/todo_provider.dart';
 import 'package:todo_app/entities/list_entity.dart';
+import 'package:todo_app/entities/todo_entity.dart';
 import 'package:todo_app/widgets/circle_painter.dart';
 
 final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -31,6 +34,7 @@ class _EditCardState extends State<EditCard> {
   final _todosProvider = TodoProvider();
 
   int _dropdownValue = 0;
+  int _dropdownValueIcon = 0;
   String _listValue = '';
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
@@ -41,7 +45,8 @@ class _EditCardState extends State<EditCard> {
     setState(() {
       _nameController.text = todo.task;
       _descriptionController.text = todo.note;
-      _dropdownValue = int.parse(todo.category);
+      _dropdownValue = todo.categoryColor;
+      _dropdownValueIcon = todo.category;
       _selectedDate = todo.dueDate;
       _selectedTime = TimeOfDay.fromDateTime(todo.dueDate);
     });
@@ -96,42 +101,30 @@ class _EditCardState extends State<EditCard> {
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
 
-    MaterialColor getColor(int item) {
-      if (item == 0) {
-        return Colors.red;
-      } else if (item == 1) {
-        return Colors.blue;
-      } else if (item == 2) {
-        return Colors.green;
-      }
-      return Colors.grey;
-    }
-
-    String getColorName(int item) {
-      if (item == 0) {
-        return 'Vermelho';
-      } else if (item == 1) {
-        return 'Azul';
-      } else if (item == 2) {
-        return 'Verde';
-      }
-      return '';
-    }
-
     List<DropdownMenuItem<int>> items = [0, 1, 2].map((item) {
       return DropdownMenuItem<int>(
         value: item,
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0),
           child: Semantics(
-            label: getColorName(item),
+            label: TodoEntity.getColorName(item),
             child: CustomPaint(
               foregroundPainter: CirclePainter(
                 8.0,
-                getColor(item),
+                TodoEntity.getColor(item),
               ),
             ),
           ),
+        ),
+      );
+    }).toList();
+
+    List<DropdownMenuItem<int>> icons = [0, 1, 2].map((item) {
+      return DropdownMenuItem<int>(
+        value: item,
+        child: Semantics(
+          label: TodoEntity.getIconName(item),
+          child: Icon(TodoEntity.getIcon(item))
         ),
       );
     }).toList();
@@ -168,35 +161,6 @@ class _EditCardState extends State<EditCard> {
           ],
         ),
       ),
-      // endDrawer: Drawer(
-      //   child: ListView(
-      //     // Important: Remove any padding from the ListView.
-      //     padding: EdgeInsets.zero,
-      //     children: <Widget>[
-      //       DrawerHeader(
-      //         decoration: BoxDecoration(
-      //           color: Colors.blue,
-      //         ),
-      //         child: Column(
-      //           children: [
-      //             Icon(
-      //               Icons.notifications_none,
-      //               color: Colors.white,
-      //             ),
-      //             SizedBox(
-      //               height: 20,
-      //             ),
-      //             Text('Sem notificações no momento',
-      //                 style: DefaultTextStyle.of(context).style.apply(
-      //                     fontSizeFactor: 0.3,
-      //                     color: Colors.white,
-      //                     decoration: TextDecoration.none)),
-      //           ],
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -205,17 +169,6 @@ class _EditCardState extends State<EditCard> {
         title: this.todoId != null
             ? Text(AppLocalizations.of(context)!.editCard)
             : Text('Criar Tarefa'),
-        // actions: [
-        //   IconButton(
-        //     tooltip: 'Notificações', //localization.starterAppTooltipFavorite,
-        //     icon: const Icon(
-        //       Icons.notifications,
-        //     ),
-        //     onPressed: () {
-        //       _scaffoldKey.currentState!.openEndDrawer();
-        //     },
-        //   ),
-        // ],
       ),
       body: Center(
         child: Padding(
@@ -254,7 +207,7 @@ class _EditCardState extends State<EditCard> {
                               .toList(),
                         );
                       }
-                      return CircularProgressIndicator();
+                      return Center(child: CircularProgressIndicator());
                     }),
                 TextFormField(
                   controller: _nameController,
@@ -307,6 +260,20 @@ class _EditCardState extends State<EditCard> {
                       padding: EdgeInsets.only(top: 11),
                       width: 50,
                       child: DropdownButtonFormField(
+                        value: _dropdownValueIcon,
+                        onChanged: (int? newValue) {
+                          setState(() {
+                            _dropdownValueIcon = newValue!;
+                          });
+                        },
+                        items: icons,
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Container(
+                      padding: EdgeInsets.only(top: 11),
+                      width: 50,
+                      child: DropdownButtonFormField(
                         value: _dropdownValue,
                         onChanged: (int? newValue) {
                           setState(() {
@@ -331,7 +298,7 @@ class _EditCardState extends State<EditCard> {
                                         this.todoId!,
                                         task: _nameController.text,
                                         note: _descriptionController.text,
-                                        category: _dropdownValue.toString(),
+                                        category: _dropdownValueIcon,
                                         dueDate: DateTime(
                                           _selectedDate.year,
                                           _selectedDate.month,
@@ -340,6 +307,7 @@ class _EditCardState extends State<EditCard> {
                                           _selectedTime.minute,
                                         ),
                                         list: _listValue,
+                                        categoryColor: _dropdownValue,
                                       )
                                       .then(
                                         (value) => Navigator.pop(context),
@@ -351,7 +319,7 @@ class _EditCardState extends State<EditCard> {
                                       .addTodo(
                                         _nameController.text,
                                         _descriptionController.text,
-                                        _dropdownValue.toString(),
+                                        _dropdownValueIcon,
                                         DateTime(
                                           _selectedDate.year,
                                           _selectedDate.month,
@@ -360,6 +328,7 @@ class _EditCardState extends State<EditCard> {
                                           _selectedTime.minute,
                                         ),
                                         _listValue,
+                                        _dropdownValue,
                                       )
                                       .then(
                                         (value) => Navigator.pop(context),
