@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:todo_app/entities/todo_entity.dart';
 import 'package:uuid/uuid.dart';
@@ -36,7 +36,6 @@ class TodoProvider {
           .map((e) => TodoEntity.fromJson(Map<String, Object>.from(e)))
           .toList();
     } catch (e) {
-      log(e.toString());
       return [];
     }
   }
@@ -145,7 +144,7 @@ class TodoProvider {
 
     final todos = await fetchAllTodos();
     final i = todos.indexWhere((element) => element.id == id);
-    log(complete.toString());
+
     todos[i] = TodoEntity(
       task ?? todos[i].task,
       id,
