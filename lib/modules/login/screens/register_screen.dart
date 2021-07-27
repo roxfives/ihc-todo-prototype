@@ -150,6 +150,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           }
                         },
                         child: Text(AppLocalizations.of(context)!.register)),
+                    MaterialButton(onPressed: () {
+                      Navigator.pop(context);
+                    }, child: Text('Cancelar'),)
                   ],
                 ),
               ),

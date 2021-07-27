@@ -32,11 +32,11 @@ class TodoEntity {
 
   static getColorName(int value) {
     if (value == 0) {
-      return 'Vermelho';
+      return 'Cor vermelho';
     } else if (value == 1) {
-      return 'Azul';
+      return 'Cor azul';
     } else if (value == 2) {
-      return 'Verde';
+      return 'Cor verde';
     }
     return '';
   }
@@ -54,11 +54,11 @@ class TodoEntity {
 
   static getIconName(int value) {
     if (value == 0) {
-      return 'Trabalho';
+      return 'Ícone trabalho';
     } else if (value == 1) {
-      return 'Social';
+      return 'Ícone social';
     } else if (value == 2) {
-      return 'Casa';
+      return 'Ícone casa';
     }
     return '';
   }

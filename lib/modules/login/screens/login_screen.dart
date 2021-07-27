@@ -39,7 +39,10 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 32),
-                child: SvgPicture.asset("assets/images/logo.svg"),
+                child: Semantics(
+                  label: 'Todozi',
+                  child: SvgPicture.asset("assets/images/logo.svg"),
+                ),
               ),
               Form(
                 key: _formKey,
@@ -87,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                          _updateSignInStatus(status: 'validating');
+                            _updateSignInStatus(status: 'validating');
                             signIn(
                                     email: _emailController.text,
                                     password: _passwordController.text)
@@ -113,7 +116,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         child:
                             Text(AppLocalizations.of(context)!.create_account)),
-                    
                   ],
                 ),
               ),

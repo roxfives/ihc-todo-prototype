@@ -434,7 +434,7 @@ class _BoardViewExample extends State<BoardViewExample> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.add),
-                  Text('Adicionar'),
+                  Text('Adicionar Tarefa'),
                 ],
               ),
             ),
