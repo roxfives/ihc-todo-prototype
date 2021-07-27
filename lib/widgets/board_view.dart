@@ -94,6 +94,9 @@ class _BoardViewExample extends State<BoardViewExample> {
                         margin: EdgeInsets.all(8.0),
                         child: MaterialButton(
                           onPressed: () {
+                            setState(() {
+                              _controller.text = '';
+                            });
                             showDialog(
                               context: context,
                               builder: (context) {
